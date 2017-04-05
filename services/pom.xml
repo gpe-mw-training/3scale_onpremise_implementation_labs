@@ -24,6 +24,31 @@
     <module>wf_swarm_datestamp_service</module>
   </modules>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.wildfly.swarm</groupId>
+          <artifactId>wildfly-swarm-plugin</artifactId>
+          <version>${version.wildfly-swarm}</version>
+          <configuration>
+            <jvmArguments>
+              <jvmArgument>-Xmx128m</jvmArgument>
+            </jvmArguments>
+          </configuration>
+          <executions>
+            <execution>
+              <id>package</id>
+              <goals>
+                <goal>package</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

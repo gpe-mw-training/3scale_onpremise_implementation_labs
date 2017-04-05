@@ -165,9 +165,7 @@ API documented similar to this.
 
 You can run it many ways:
 
-* mvn package && java -jar ./target/example-jaxrs-swagger-swarm.jar
-* mvn wildfly-swarm:run
-* In your IDE run the `org.wildfly.swarm.examples.jaxrs.swagger..Main` class
+* mvn package && java -jar ./target/wf-swarm-swagger-1.0-swarm.jar
 
 == Use
 
