@@ -1,0 +1,21 @@
+#%RAML 0.8
+---
+title: Hello world REST API
+baseUri: http://localhost:8080/
+version: v1
+
+/hello:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            schema: |
+              { "$schema": "http://json-schema.org/schema",
+                "type": "object",
+                "description": "Hello World Greeting",
+                "properties": {
+                  "greeting":  { "type": "string" }
+                },
+                "required": [ "greeting" ]
+              }
