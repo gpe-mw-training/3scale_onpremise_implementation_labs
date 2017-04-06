@@ -165,14 +165,14 @@ API documented similar to this.
 
 You can run it many ways:
 
-* mvn package && java -jar ./target/wf-swarm-swagger-1.0-swarm.jar
+* mvn package && java -Dswarm.http.port=9180 -jar ./target/wf-swarm-swagger-1.0-swarm.jar
 
 == Use
 
 To `GET` the JAX-RS resouce
 
-    http://localhost:8080/time/now
+    http://localhost:9180/time/now
 
 To `GET` the API specification as a `swagger.json` document
 
-    http://localhost:8080/swagger.json
+    http://localhost:9180/swagger.json

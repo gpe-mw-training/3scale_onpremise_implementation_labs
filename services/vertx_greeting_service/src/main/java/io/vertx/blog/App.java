@@ -8,12 +8,22 @@ import io.vertx.util.Runner;
 
 public class App extends AbstractVerticle {
 
+  private static final String LISTENER_PORT="LISTENER_PORT";
+
   public static void main(String[] args) {
     Runner.run(App.class);
   }
 
   @Override
   public void start() {
+
+    int port = 8080;
+    String portString = System.getProperty(LISTENER_PORT);
+    if(portString != null && !portString.equals("")) 
+        port = Integer.parseInt(portString);
+
+    System.out.println("start() port this service will bind to: "+port);
+
     Router router = Router.router(vertx);
 
     router.get("/hello").handler(rc -> {
@@ -26,6 +36,6 @@ public class App extends AbstractVerticle {
     // online from their web browsers
     router.route().handler(StaticHandler.create());
 
-    vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+    vertx.createHttpServer().requestHandler(router::accept).listen(port);
   }
 }
