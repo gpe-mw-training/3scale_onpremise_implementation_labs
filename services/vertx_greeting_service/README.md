@@ -11,7 +11,11 @@ This experiment shows how one can easily test API contracts defined in [RAML](ht
 
  ```
 mvn clean package
-java -DLISTENER_PORT=9080 -jar target/vertx-raml-1.0-fat.jar
+java -DLISTENER_PORT=9080 -jar target/vertx-raml-1.0-fat.jar &
  ```
 
-After this open a browser to: `http://localhost:9080?raml=/api/hello.raml`.
+Invoke the RESTful service:
+    curl -l $HOSTNAME:9080/hello
+
+View RAML documentation
+    Open a browser and nagivate to: http://$HOSTNAME:9080?raml=/api/hello.raml
