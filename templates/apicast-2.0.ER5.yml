@@ -23,8 +23,6 @@ objects:
         labels:
           deploymentconfig: "${APICAST_NAME}"
       spec:
-        imagePullSecrets: # PRD: remove
-          - name: quay-auth
         containers:
         - env:
           - name: THREESCALE_PORTAL_ENDPOINT
@@ -48,16 +46,16 @@ objects:
             value: "${PATH_ROUTING}"
           - name: APICAST_RESPONSE_CODES
             value: "${RESPONSE_CODES}"
+          - name: APICAST_REQUEST_LOGS
+            value: "${REQUEST_LOGS}"
           - name: APICAST_CONFIGURATION_CACHE
             value: "${CONFIGURATION_CACHE}"
           - name: REDIS_URL
             value: "${REDIS_URL}"
           - name: APICAST_MANAGEMENT_API
             value: "${MANAGEMENT_API}"
-          - name: OPENSSL_VERIFY
-            value: "${OPENSSL_VERIFY}"
-          image: "quay.io/3scale/amp:apicast-${AMP_RELEASE}"
-          imagePullPolicy: IfNotPresent
+          image: "3scale-amp20-beta/apicast-gateway:0.4-2"
+          imagePullPolicy: Always
           name: "${APICAST_NAME}"
           livenessProbe:
             httpGet:
@@ -101,7 +99,7 @@ objects:
 parameters:
 - name: AMP_RELEASE
   description: "AMP release tag."
-  value: "2.0.0-CR1"
+  value: "2.0.0-ER5-redhat-1"
   required: true
 - description: "Name of the secret containing the THREESCALE_PORTAL_ENDPOINT with the access-token or provider key"
   value: apicast-configuration-url-secret
@@ -153,7 +151,3 @@ parameters:
   description: "Scope of the Management API. Can be disabled, status or debug. At least status required for health checks."
   required: false
   value: "status"
-- name: OPENSSL_VERIFY
-  description: "Turn on/off the OpenSSL peer verification. Can be set to true/false."
-  required: true
-  value: "false"
