@@ -1,0 +1,11 @@
+apicast
+    - http://pkgs.devel.redhat.com/cgit/rpms/3scale-amp-apicast-gateway-template/plain/apicast.yml?h=3scale-amp-2.0-rhel-7&id=b9c2ce9c79b36012a7abc8b757d66591dc181dee
+
+amp
+    - http://pkgs.devel.redhat.com/cgit/rpms/3scale-amp-openshift-templates/plain/amp.yml?h=3scale-amp-2.0-rhel-7
+
+image repos
+    - https://access.redhat.com/containers/#/search/3scale-amp20-beta
+    - https://quay.io/repository/3scale/apicast?tab=tags
+
+
