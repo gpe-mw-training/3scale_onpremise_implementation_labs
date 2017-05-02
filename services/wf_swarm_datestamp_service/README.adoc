@@ -171,7 +171,7 @@ You can run it many ways:
 
 To `GET` the JAX-RS resouce
 
-    http://localhost:9180/time/now
+    curl -v http://localhost:9180/time/now
 
 To `GET` the API specification as a `swagger.json` document
 

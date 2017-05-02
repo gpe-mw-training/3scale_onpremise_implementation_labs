@@ -26,7 +26,9 @@ EXPOSE 8080
 
 COPY $VERTICLE_FILE $VERTICLE_HOME/
 
+ENV VERTX_CACHE_DIR_BASE /tmp
+
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["exec vertx run $VERTICLE_NAME -cp $VERTICLE_HOME/*"]
+CMD ["exec vertx run $VERTICLE_NAME -Dvertx.cacheDirBase=$VERTX_CACHE_DIR_BASE -cp $VERTICLE_HOME/*"]
