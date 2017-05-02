@@ -18,4 +18,4 @@ Invoke the RESTful service:
     curl -l $HOSTNAME:9080/hello
 
 View RAML documentation
-    Open a browser and nagivate to: http://$HOSTNAME:9080?raml=/api/hello.raml
+    Open a browser and nagivate to the value of: echo http://$HOSTNAME:9080?raml=/api/hello.raml
