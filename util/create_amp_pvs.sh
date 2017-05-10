@@ -21,7 +21,7 @@ cat <<EOF > /tmp/pvs/${volume}
     },
     "accessModes": [ "ReadWriteOnce", "ReadWriteMany" ],
     "nfs": {
-        "path": "/srv/nfs/${volume}",
+        "path": "/var/nfs/${volume}",
         "server": "${nfs_server_ip}"
     },
     "persistentVolumeReclaimPolicy": "Recycle"
@@ -35,7 +35,7 @@ done;
 
 mkdir /tmp/pvs
 
-nfs_server_ip=192.168.0.254
+nfs_server_ip=192.168.122.254
 volsize="2Gi"
 startVol=1
 endVol=4
