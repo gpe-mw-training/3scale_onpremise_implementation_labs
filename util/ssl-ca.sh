@@ -1,12 +1,16 @@
 WORK_DIR=$HOME/ssl_ca
 
 # 1) Blow away any existing SSL related files
+echo -en "Deleting: $WORK_DIR"
 rm -rf $WORK_DIR
 
 # 2) Create directory structure that facilitates generation of keys, keystores and self-signed certs.
+echo -en "\nCreating: $WORK_DIR"
 mkdir -p $WORK_DIR/certs $WORK_DIR/newcerts $WORK_DIR/private $WORK_DIR/crl
 
 # 3) Create files that assist a Certificate Authority(CA) sign a Certificate Signing Request (CSR)
+echo -en "\nAdding: index.txt, serial and ca.cnf to $WORK_DIR\n"
+
 touch $WORK_DIR/index.txt
 chmod 0664 $WORK_DIR/index.txt
 
