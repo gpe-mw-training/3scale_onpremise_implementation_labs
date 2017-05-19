@@ -22,6 +22,12 @@ public class Main {
         archive.setResourcePackages("org.wildfly.swarm.examples.jaxrs.swagger");
 
         deployment.addAllDependencies();
+
+        deployment.as(org.wildfly.swarm.keycloak.Secured.class)
+            .protect()
+            .withMethod( "GET" )
+            .withRole("test-user");
+
         swarm.fraction(LoggingFraction.createDefaultLoggingFraction())
                 .start()
                 .deploy(deployment);
