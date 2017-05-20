@@ -26,7 +26,7 @@ public class Main {
         deployment.as(org.wildfly.swarm.keycloak.Secured.class)
             .protect()
             .withMethod( "GET" )
-            .withRole("test-user");
+            .withRole("swarmRole");
 
         swarm.fraction(LoggingFraction.createDefaultLoggingFraction())
                 .start()
