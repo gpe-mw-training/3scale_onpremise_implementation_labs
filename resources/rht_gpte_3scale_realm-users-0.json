@@ -1,0 +1,56 @@
+{
+  "realm" : "rht_gpte_3scale_realm",
+  "users" : [ {
+    "id" : "95608c4e-4340-4e95-afe1-99ad6eba3b5b",
+    "createdTimestamp" : 1495316640134,
+    "username" : "alice",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "PuTFlbJr1B1yq1vgC36StBCxYSqgZ9t8ruIJUXrkmNZyIYb6T0aXCuXf8lz5UpmuTNc3l8mzSwkzLElBIvZV8A==",
+      "salt" : "ke4mrW404kHUUQTMxaNZ4Q==",
+      "hashIterations" : 20000,
+      "counter" : 0,
+      "algorithm" : "pbkdf2",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1495316705359,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization", "swarmRole" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "groups" : [ ]
+  }, {
+    "id" : "2a8a776a-4785-4885-b82c-6a65c55740b4",
+    "createdTimestamp" : 1495316721932,
+    "username" : "bob",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "UH3ARYACNCHcf2lhn7EXKOojLvO9WTWWKQHDbbw//8FKXL7nt0wtkgMMk6S9oV8CnVNYKPWXWdm/1mlRlxlxTA==",
+      "salt" : "2o5W6zr85LvxcWkGVVNCjg==",
+      "hashIterations" : 20000,
+      "counter" : 0,
+      "algorithm" : "pbkdf2",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1495316736707,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "groups" : [ ]
+  } ]
+}
