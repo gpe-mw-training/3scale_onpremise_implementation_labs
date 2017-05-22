@@ -18,3 +18,4 @@ LMSClass/
 build.metadata
 .metadata
 target/
+keycloak.json

@@ -24,6 +24,8 @@
 
   <build>
     <plugins>
+
+      <!-- Allow for buid and execution of this project in a local environment at the command line -->
       <plugin>
         <groupId>org.wildfly.swarm</groupId>
         <artifactId>wildfly-swarm-plugin</artifactId>
@@ -42,6 +44,22 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Allow for build of and deployment of OCP container from this project -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>fabric8-maven-plugin</artifactId>
+        <version>${version.fabric8}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>resource</goal>
+                        <goal>build</goal>
+                    </goals>
+                </execution>
+            </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -67,6 +85,7 @@
       <artifactId>joda-time</artifactId>
       <version>2.7</version>
     </dependency>
+
   </dependencies>
 
 </project>

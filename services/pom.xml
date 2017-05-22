@@ -10,6 +10,7 @@
 
   <properties>
     <version.wildfly-swarm>2017.3.3</version.wildfly-swarm>
+    <version.fabric8>3.2.28</version.fabric8>
 
     <maven.min.version>3.2.1</maven.min.version>
 
