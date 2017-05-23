@@ -13,6 +13,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.joda.time.DateTime;
 
+import org.keycloak.representations.AccessToken;
+import org.keycloak.KeycloakPrincipal;
+
 @Path("/time")
 @Api(value = "/time", description = "Get the time", tags = "time")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,8 +32,13 @@ public class TimeResource {
 
         Principal principal = request.getUserPrincipal();
         if(principal != null) {
-            String pName = principal.getName();
-            System.out.println("get() pName = "+pName+" : principal class type = "+principal.getClass().toString());
+            // Use KeycloakPrincipal to view AccessToken
+            KeycloakPrincipal kPrincipal = (KeycloakPrincipal)principal;
+
+            AccessToken aToken = kPrincipal.getKeycloakSecurityContext().getToken();
+            String userId = aToken.getSubject();
+            System.out.println("userId = "+ userId);
+
         }else {
             System.out.println("get() principal not found ");
         }
