@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: ${project.artifactId}
+spec:
+  template:
+    spec:
+      containers:
+            - name: JAVA_OPTIONS
+              value: "-Djavax.net.ssl.trustStore=/u02/certs/truststore.jks -Djavax.net.ssl.trustStorePassword=${TRUSTSTORE_PASS} -Djavax.net.debug=ssl"
