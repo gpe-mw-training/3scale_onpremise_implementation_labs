@@ -15,7 +15,7 @@
     <relativePath>../</relativePath>
   </parent>
 
-  <artifactId>wf-swarm-swagger</artifactId>
+  <artifactId>wf-swarm-oauth</artifactId>
 
   <name>WildFly Swarm Examples: JAX-RS swagger</name>
   <description>WildFly Swarm Examples: JAX-RS swagger</description>
