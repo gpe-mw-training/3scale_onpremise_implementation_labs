@@ -6,5 +6,8 @@ spec:
   template:
     spec:
       containers:
+        - env:
+            - name: TRUSTSTORE_PASS
+              value: ${TRUSTSTORE_PASS}
             - name: JAVA_OPTIONS
               value: "-Djavax.net.ssl.trustStore=/u02/certs/truststore.jks -Djavax.net.ssl.trustStorePassword=${TRUSTSTORE_PASS} -Djavax.net.debug=ssl"
