@@ -52,5 +52,57 @@
       "account" : [ "view-profile", "manage-account" ]
     },
     "groups" : [ ]
+  }, {
+    "id" : "dc79fa6a-e797-449a-9840-24315fdb0e14",
+    "createdTimestamp" : 1496821402152,
+    "username" : "swarm_dev",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "GGnsAJGKQ7MuFj1+ghtz1vQgxwu/VMNLGTG3wIbDEGU6CPoE9Dp2xnbjI9oPRyniY5thzTKphCXN0/9bL2efww==",
+      "salt" : "1OaVYHwMZPNC90xvy8fQyg==",
+      "hashIterations" : 20000,
+      "counter" : 0,
+      "algorithm" : "pbkdf2",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1496821418635,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization", "swarmRole" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "groups" : [ ]
+  }, {
+    "id" : "e7596912-9987-4abb-a409-af2678d164f3",
+    "createdTimestamp" : 1496821441391,
+    "username" : "vertx_dev",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "jL48DzldHBzhYndy2xbY9f+WY9cZOEm1PT28VPTo7sGlGC4yEimS7J7U2ODJrQD6JifhY6Mlr11u2UgOqhqdtw==",
+      "salt" : "UbaIK5pAwZiwOfq8SvjdLQ==",
+      "hashIterations" : 20000,
+      "counter" : 0,
+      "algorithm" : "pbkdf2",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1496821461388,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "groups" : [ ]
   } ]
 }
