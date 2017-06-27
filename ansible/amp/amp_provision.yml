@@ -1,0 +1,6 @@
+- hosts: onprem-amp
+  remote_user: root
+  connection: local
+
+  roles:
+    - amp_provision 
