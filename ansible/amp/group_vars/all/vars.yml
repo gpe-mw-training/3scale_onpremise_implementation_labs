@@ -1,8 +1,11 @@
 # v2.0.0.GA-redhat-2
 threescale_template: https://raw.githubusercontent.com/3scale/3scale-amp-openshift-templates/2.0.0.GA-redhat-2/amp/amp.yml
+modified_template_path: /tmp/amp.yml
 
 threescale_project: 3scale-amp
 threescale_tenant_name: 3scale
 threescale_wildcard_domain: "{{ openshift_master_default_subdomain }}"
 threescale_delay: 5
 threescale_retries: 30
+
+amp_admin_passwd: admin

@@ -6,6 +6,22 @@
 # It's highly recommended that this set of tasks found in this file be used as a student in this course only.
 # Afterwards, leverage (and contribute to) the original ansible playbook created by nmasse-itix.
 
+- name: Download {{ threescale_template }} and change all replicas to zero (replicas will be selectively spun up as needed in this ansible play)
+  get_url:
+    url: "{{ threescale_template }}"
+    dest: "{{modified_template_path}}"
+    force: yes
+- replace:
+    path: "{{ modified_template_path }}"
+    regexp: 'replicas: 1'
+    replace: 'replicas: 0'
+    backup: yes
+- replace:
+    path: "{{ modified_template_path }}"
+    regexp: 'type: ConfigChange'
+    replace: 'type: "[]"'
+    backup: no
+
 - name: Get a list of existing projects
   command: oc get projects -o name
   register: oc_get_projects
@@ -16,7 +32,7 @@
   when: '"project/" ~ threescale_project not in oc_get_projects.stdout_lines'
 
 - name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
-  shell: oc process -f "{{ threescale_template }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
+  shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
   register: oc
   failed_when: oc.rc > 0 and 'Error from server (AlreadyExists):' not in oc.stderr
   changed_when: oc.rc == 0
@@ -78,7 +94,6 @@
 - name: Deploy everything else without any replicas
   command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
   with_items:
-    - backend-listener
     - backend-worker
     - system-app
     - system-resque
