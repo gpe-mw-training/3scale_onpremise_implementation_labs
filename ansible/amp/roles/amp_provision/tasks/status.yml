@@ -1,0 +1,22 @@
+---
+
+- name: Retrieve current ReplicationController status
+  command: 'oc get rc -o json -n "{{ threescale_project }}"'
+  register: rc_state
+  changed_when: false
+
+- name: Parse the list of deployed ReplicationController
+  set_fact:
+    replication_controllers: '{{ rc_state.stdout |from_json |json_query(''items[? @.status.replicas && @.status.replicas != `0`].metadata.annotations."openshift.io/deployment-config.name"'') }}'
+    replication_controllers_status: '{{ rc_state.stdout |from_json |json_query(''items[? @.status.replicas && @.status.replicas != `0`].{"name": metadata.annotations."openshift.io/deployment-config.name", "status": status.readyReplicas}'') }}'
+
+
+- name: Retrieve current DeploymentConfig status
+  command: 'oc get dc -o json -n "{{ threescale_project }}"'
+  register: dc_state
+  changed_when: false
+
+- name: Parse the list of DeploymentConfig
+  set_fact:
+    deployment_configs: '{{ dc_state.stdout |from_json |json_query(''items[? metadata.generation > `1`].metadata.name'') }}'
+    deployment_configs_status: '{{ dc_state.stdout |from_json |json_query(''items[? metadata.generation > `1` ].{"name": metadata.name, "status": status.replicas}'') }}'
