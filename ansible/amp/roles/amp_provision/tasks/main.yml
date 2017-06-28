@@ -169,6 +169,12 @@
   changed_when: false
   tags: status
 
+- name: Get Admin ACCESS TOKEN
+  command: oc get dc system-app -n "{{ threescale_project }}" -o 'jsonpath={.spec.template.spec.containers[0].env[?(@.name=="ADMIN_ACCESS_TOKEN")].value}'
+  register: ON_PREM_ACCESS_TOKEN
+  changed_when: false
+  tags: status
+
 - name: 3scale is ready !
-  debug: msg="Login on https://{{ threescale_tenant_name }}-admin.{{ threescale_wildcard_domain }} with username = '{{ username.stdout }}' and password = '{{ password.stdout }}'"
+  debug: msg="Login on https://{{ threescale_tenant_name }}-admin.{{ threescale_wildcard_domain }} with username = '{{ username.stdout }}' and password = '{{ password.stdout }} and addmin access token = '{{ ON_PREM_ACCESS_TOKEN.stdout }}' '"
   tags: status
