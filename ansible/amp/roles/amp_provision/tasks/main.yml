@@ -21,21 +21,25 @@
     regexp: 'type: ConfigChange'
     replace: 'type: "[]"'
     backup: no
+  tags: setup
 
 - name: Get a list of existing projects
   command: oc get projects -o name
   register: oc_get_projects
   changed_when: false
+  tags: setup
 
 - name: Create a new project for 3scale
   command: oc new-project "{{ threescale_project }}"
   when: '"project/" ~ threescale_project not in oc_get_projects.stdout_lines'
+  tags: setup
 
 - name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
   shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
   register: oc
   failed_when: oc.rc > 0 and 'Error from server (AlreadyExists):' not in oc.stderr
   changed_when: oc.rc == 0
+  tags: setup
 
 - include: status.yml
   tags: status

@@ -9,3 +9,4 @@ threescale_delay: 5
 threescale_retries: 30
 
 amp_admin_passwd: admin
+ON_PREM_ACCESS_TOKEN: 

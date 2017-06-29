@@ -7,3 +7,4 @@
 
   roles:
     - amp_provision 
+    - 3scale_resources
