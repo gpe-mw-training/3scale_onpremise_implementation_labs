@@ -20,3 +20,12 @@
   set_fact:
     deployment_configs: '{{ dc_state.stdout |from_json |json_query(''items[? metadata.generation > `1`].metadata.name'') }}'
     deployment_configs_status: '{{ dc_state.stdout |from_json |json_query(''items[? metadata.generation > `1` ].{"name": metadata.name, "status": status.replicas}'') }}'
+
+- name: Retrieve current routes
+  command: 'oc get routes -o json -n "{{ threescale_project }}"'
+  register: routes_state
+  changed_when: false
+
+- name: Parse the list of routes
+  set_fact:
+    routes: '{{ routes_state.stdout |from_json |json_query(''items[*].metadata.name'') }}'

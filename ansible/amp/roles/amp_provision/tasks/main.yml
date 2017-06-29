@@ -6,6 +6,10 @@
 # It's highly recommended that this set of tasks found in this file be used as a student in this course only.
 # Afterwards, leverage (and contribute to) the original ansible playbook created by nmasse-itix.
 
+
+
+
+################            AMP Project and Template            #####################
 - name: Download {{ threescale_template }} and change all replicas to zero (replicas will be selectively spun up as needed in this ansible play)
   get_url:
     url: "{{ threescale_template }}"
@@ -44,6 +48,12 @@
 - include: status.yml
   tags: status
 
+
+
+
+
+
+#########################           AMP Storage Tier        #####################################
 - name: Deploy the storage tier (MySQL, Redis and Memcache) without any replicas
   command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
   with_items:
@@ -95,6 +105,18 @@
       - backend-listener
   tags: status
 
+
+
+
+
+
+
+
+
+
+
+
+#########################           AMP System Tier        #####################################
 - name: Deploy everything else without any replicas
   command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
   with_items:
@@ -153,6 +175,34 @@
   when: item not in replication_controllers
   tags: rollout
 
+
+
+
+#####################           Routes          #################################
+- name: Delete generic apicast routes
+  command: oc delete route "{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - api-apicast-staging-route
+    - api-apicast-production-route
+    - vertx-staging-apicast-route
+    - vertx-prod-apicast-route
+  when: item in routes
+  tags: rollout
+
+- name: Replace generic stage apicast routes with new routes whose name is more specific to our backend service
+  command: oc create route edge {{ item }} --service=apicast-staging --hostname=vertx-prod-apicast-{{ threescale_wildcard_domain }} -n "{{ threescale_project }}"
+  with_items: 
+    - vertx-staging-apicast-route
+  when: item not in routes
+  tags: rollout
+
+- name: Replace generic prod apicast routes with new routes whose name is more specific to our backend service
+  command: oc create route edge {{ item }} --service=apicast-production --hostname=vertx-stage-apicast-{{ threescale_wildcard_domain }} -n "{{ threescale_project }}"
+  with_items: 
+    - vertx-prod-apicast-route
+  when: item not in routes
+  tags: rollout
+
 - include: wait_for.yml
   static: no
   vars:
@@ -160,6 +210,12 @@
       - apicast-staging
       - apicast-production
   tags: status
+
+
+
+
+
+########################            3Scale State        ##################################
 
 - name: Get Admin Username
   command: oc get dc system-app -n "{{ threescale_project }}" -o 'jsonpath={.spec.template.spec.containers[0].env[?(@.name=="USER_LOGIN")].value}'

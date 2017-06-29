@@ -12,9 +12,14 @@
 - fail:
     msg: "Please ensure the following variable is set: ON_PREM_ACCESS_TOKEN"
   when: "ON_PREM_ACCESS_TOKEN is not defined"
-  tags: resources
+  tags: 3scale_resources
 
 
 - name: Execute shell script that creates 3Scale resources
   script: refresh_3scale_resources.sh --threescale_tenant_name {{ threescale_tenant_name }} --ON_PREM_ACCESS_TOKEN {{ ON_PREM_ACCESS_TOKEN.stdout }} --OCP_WILDCARD_DOMAIN {{ threescale_wildcard_domain }}
-  tags: resources
+  tags: 3scle_resources
+
+- name: Test the backend vertx service via production apicast
+  command: 'oc get route/vertx-prod-apicast-route -o template --template {{.spec.host}}'
+  register: vertx_route_host
+  changed_when: false

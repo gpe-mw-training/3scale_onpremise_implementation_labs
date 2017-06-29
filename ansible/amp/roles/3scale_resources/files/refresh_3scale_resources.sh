@@ -90,6 +90,31 @@ function vertx_service() {
   echo -en "\nvertx_service() vertx_servicePlanId = $vertx_servicePlanId" >> $LOG_FILE
 }
 
+
+function custom_plans() {
+
+  echo -en "\n\ncustom_plans() creating 3scale custom plans for vertx_service" >> $LOG_FILE
+
+  ##### IMPLEMENT ME: CREATION OF APP PLAN and HIT METRIC  #######
+
+  ##### IMPLEMENT ME: CREATION OF ACCOUNT PLAN  #######
+}
+
+function account() {
+
+  echo -en "\n\naccount() creating account and user " >> $LOG_FILE
+
+  ##### IMPLEMENT CREATION OF ACCOUNT and USER  #######
+
+}
+
+function serviceProxy() {
+  echo -en "\n\nserviceProxy() creating account and user " >> $LOG_FILE
+
+  ##### IMPLEMENT ME:    CREATION OF ACCOUNT and USER  #######
+}
+
+
 echo args = $@
 
 while true; do
@@ -105,3 +130,6 @@ done
 check_variables
 list_services
 vertx_service
+custom_plans
+account
+serviceProxy
