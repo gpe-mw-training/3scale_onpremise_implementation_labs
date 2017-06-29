@@ -16,10 +16,10 @@
 
 
 - name: Execute shell script that creates 3Scale resources
-  script: refresh_3scale_resources.sh --threescale_tenant_name {{ threescale_tenant_name }} --ON_PREM_ACCESS_TOKEN {{ ON_PREM_ACCESS_TOKEN.stdout }} --OCP_WILDCARD_DOMAIN {{ threescale_wildcard_domain }}
-  tags: 3scle_resources
+  script: refresh_3scale_resources.sh --threescale_tenant_name {{ threescale_tenant_name }} --ON_PREM_ACCESS_TOKEN {{ ON_PREM_ACCESS_TOKEN.stdout }} --OCP_WILDCARD_DOMAIN {{ threescale_wildcard_domain }} --vertx_prod_route {{ vertx_prod_route.hostname }} \
+          --API_RESPONSE_DIR {{ API_RESPONSE_DIR }} \
+          --LOG_FILE {{ PROVISION_3SCALE_LOG_FILE }}
+  tags: 3scale_resources
 
-- name: Test the backend vertx service via production apicast
-  command: 'oc get route/vertx-prod-apicast-route -o template --template {{.spec.host}}'
-  register: vertx_route_host
-  changed_when: false
+- debug: msg="Review the following log file for details regarding provisioning of 3Scale resources = {{ PROVISION_3SCALE_LOG_FILE }} "
+  tags: 3scale_resources

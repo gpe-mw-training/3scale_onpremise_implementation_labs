@@ -2,28 +2,23 @@
   # refresh_3scale_resources.sh --threescale_tenant_name 3scale --OCP_WILDCARD_DOMAIN $OCP_WILDCARD_DOMAIN --ON_PREM_ACCESS_TOKEN x7fwv5s26cs7ymqr
 
 
-
-
-export API_RESPONSE_DIR=/tmp/amp_api_responses
-export LOG_FILE=$API_RESPONSE_DIR/refresh_3scale_resources.log
-
 mkdir -p $API_RESPONSE_DIR
 
 function check_variables() {
   if [ "x$threescale_tenant_name" == "x"  ]; then
-    echo "Please ensure the following environment variable is set: threescale_tenant_name"
-    exit 1;
+    echo "Please ensure the following environment variable is set: threescale_tenant_name"; exit 1;
   fi
   if [ "x$ON_PREM_ACCESS_TOKEN" == "x"  ]; then
-    echo "Please ensure the following environment variable is set: ON_PREM_ACCESS_TOKEN"
-    exit 1;
+    echo "Please ensure the following environment variable is set: ON_PREM_ACCESS_TOKEN"; exit 1;
   fi
   if [ "x$OCP_WILDCARD_DOMAIN" == "x"  ]; then
-    echo "Please ensure the following environment variable is set: OCP_WILDCARD_DOMAIN"
-    exit 1;
+    echo "Please ensure the following environment variable is set: OCP_WILDCARD_DOMAIN"; exit 1;
+  fi
+  if [ "x$vertx_prod_route" == "x"  ]; then
+    echo "Please ensure the following environment variable is set: vertx_prod_route"; exit 1;
   fi
 
-  echo -en "threescale_tenant_name = $threescale_tenant_name : ON_PREM_ACCESS_TOKEN = $ON_PREM_ACCESS_TOKEN : OCP_WILDCARD_DOMAIN = $OCP_WILDCARD_DOMAIN\n\n" > $LOG_FILE
+  echo -en "threescale_tenant_name = $threescale_tenant_name : ON_PREM_ACCESS_TOKEN = $ON_PREM_ACCESS_TOKEN : OCP_WILDCARD_DOMAIN = $OCP_WILDCARD_DOMAIN : vertx_prod_route = $vertx_prod_route\n\n" > $LOG_FILE
 }
 
 function list_services() {
@@ -104,24 +99,50 @@ function account() {
 
   echo -en "\n\naccount() creating account and user " >> $LOG_FILE
 
-  ##### IMPLEMENT CREATION OF ACCOUNT and USER  #######
+  ##### IMPLEMENT CREATION OF ACCOUNT & USER.  ALSO, DETERMINE APP USER KEY  #######
+
+  vertx_app_user_key=
+  echo -en "\n\naccount() vertx_app_user_key determined to be: $vertx_app_user_key" >> $LOG_FILE
 
 }
 
 function serviceProxy() {
-  echo -en "\n\nserviceProxy() creating account and user " >> $LOG_FILE
+  echo -en "\n\nserviceProxy() update service proxy " >> $LOG_FILE
 
-  ##### IMPLEMENT ME:    CREATION OF ACCOUNT and USER  #######
+  ##### IMPLEMENT ME: Update service proxy with api_backend, endpoint and sandbox_endpoint  #######
+}
+
+function promote() {
+
+  echo -en "\n\npromote() " >> $LOG_FILE
+
+  ##### IMPLEMENT ME: promote the latest proxy config for sandbox environment #######
+
+}
+
+function test() {
+
+  echo -en "\n\ntest() Will now test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
+
+  ######  UNCOMMENT WHEN READY TO TEST    
+  # echo -en "\n`curl -v -k $vertx_prod_route/hello?user_key=$vertx_app_user_key`\n\n" >> $LOG_FILE
+
 }
 
 
 echo args = $@
+
+export API_RESPONSE_DIR=/tmp/amp_api_responses
+export LOG_FILE=$API_RESPONSE_DIR/refresh_3scale_resources.log
 
 while true; do
     case "$1" in
         --threescale_tenant_name) threescale_tenant_name="$2"; shift 2;;
         --ON_PREM_ACCESS_TOKEN) ON_PREM_ACCESS_TOKEN="$2"; shift 2;;
         --OCP_WILDCARD_DOMAIN) OCP_WILDCARD_DOMAIN="$2"; shift 2;;
+        --vertx_prod_route) vertx_prod_route="$2"; shift 2;;
+        --API_RESPONSE_DIR) API_RESPONSE_DIR="$2"; shift 2;;
+        --LOG_FILE) LOG_FILE="$2"; shift 2;;
         --) shift; break;;
         *) break;;
     esac
@@ -133,3 +154,5 @@ vertx_service
 custom_plans
 account
 serviceProxy
+promote
+test

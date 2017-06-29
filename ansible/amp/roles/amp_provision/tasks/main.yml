@@ -7,8 +7,6 @@
 # Afterwards, leverage (and contribute to) the original ansible playbook created by nmasse-itix.
 
 
-
-
 ################            AMP Project and Template            #####################
 - name: Download {{ threescale_template }} and change all replicas to zero (replicas will be selectively spun up as needed in this ansible play)
   get_url:
@@ -62,7 +60,7 @@
     - system-mysql
     - system-redis
   when: item not in deployment_configs
-  tags: rollout
+  tags: amp_rollout
 
 - name: Scale the storage tier (MySQL, Redis and Memcache)
   command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
@@ -72,7 +70,7 @@
     - system-mysql
     - system-redis
   when: item not in replication_controllers
-  tags: rollout
+  tags: amp_rollout
 
 - include: wait_for.yml
   static: no
@@ -89,14 +87,14 @@
   with_items:
     - backend-listener
   when: item not in deployment_configs
-  tags: rollout
+  tags: amp_rollout
 
 - name: Scale backend-listener
   command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
   with_items:
     - backend-listener
   when: item not in replication_controllers
-  tags: rollout
+  tags: amp_rollout
 
 - include: wait_for.yml
   static: no
@@ -129,7 +127,7 @@
     - apicast-staging
     - apicast-production
   when: item not in deployment_configs
-  tags: rollout
+  tags: amp_rollout
 
 - name: Scale system-app, system-resque and system-sidekiq
   command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
@@ -138,7 +136,7 @@
     - system-resque
     - system-sidekiq
   when: item not in replication_controllers
-  tags: rollout
+  tags: amp_rollout
 
 - include: wait_for.yml
   static: no
@@ -156,7 +154,7 @@
     - backend-cron
     - system-sphinx
   when: item not in replication_controllers
-  tags: rollout
+  tags: amp_rollout
 
 - include: wait_for.yml
   static: no
@@ -173,7 +171,15 @@
     - apicast-staging
     - apicast-production
   when: item not in replication_controllers
-  tags: rollout
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - apicast-staging
+      - apicast-production
+  tags: status
 
 
 
@@ -184,32 +190,23 @@
   with_items:
     - api-apicast-staging-route
     - api-apicast-production-route
-    - vertx-staging-apicast-route
-    - vertx-prod-apicast-route
+    - "{{ vertx_stage_route.routename }}"
+    - "{{ vertx_prod_route.routename }}"
   when: item in routes
-  tags: rollout
+  tags: amp_rollout
 
 - name: Replace generic stage apicast routes with new routes whose name is more specific to our backend service
-  command: oc create route edge {{ item }} --service=apicast-staging --hostname=vertx-prod-apicast-{{ threescale_wildcard_domain }} -n "{{ threescale_project }}"
+  command: oc create route edge {{ item }} --service=apicast-staging --hostname="{{ vertx_stage_route.hostname }}" -n "{{ threescale_project }}"
   with_items: 
-    - vertx-staging-apicast-route
-  when: item not in routes
-  tags: rollout
+    - "{{ vertx_stage_route.routename }}"
+  tags: amp_rollout
 
 - name: Replace generic prod apicast routes with new routes whose name is more specific to our backend service
-  command: oc create route edge {{ item }} --service=apicast-production --hostname=vertx-stage-apicast-{{ threescale_wildcard_domain }} -n "{{ threescale_project }}"
+  command: oc create route edge {{ item }} --service=apicast-production --hostname="{{ vertx_prod_route.hostname }}" -n "{{ threescale_project }}"
   with_items: 
-    - vertx-prod-apicast-route
-  when: item not in routes
-  tags: rollout
+    - "{{ vertx_prod_route.routename }}"
+  tags: amp_rollout
 
-- include: wait_for.yml
-  static: no
-  vars:
-    pod_to_wait:
-      - apicast-staging
-      - apicast-production
-  tags: status
 
 
 
