@@ -40,7 +40,7 @@ function vertx_service() {
   if [ "x$vertx_serviceId" != "x" ]; then
     echo -en "\nvertx_service() will now delete service with Id = $vertx_serviceId" >> $LOG_FILE
 
-    curl f -v -k -X DELETE "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId.xml" \
+    curl -f -v -k -X DELETE "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId.xml" \
        -d "access_token=$ON_PREM_ACCESS_TOKEN" \
        -d "system_name=vertx_service" \
        | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_service_delete_response.xml
@@ -77,9 +77,12 @@ function vertx_service() {
   echo -en "\nvertx_service() vertx_hit_metric_id = $vertx_hit_metric_id" >> $LOG_FILE
 
   # Review the Default Service Plan
-  curl -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/service_plans.xml" \
+  curl -f -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/service_plans.xml" \
        -d "access_token=$ON_PREM_ACCESS_TOKEN" \
        | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_default_service_plan.xml
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR in reviewing default service plan"; exit 1
+  fi
 
   eval vertx_servicePlanId=\"`xmlstarlet sel -t -m '//plan' -v 'id' -n $API_RESPONSE_DIR/vertx_default_service_plan.xml`\"
   echo -en "\nvertx_service() vertx_servicePlanId = $vertx_servicePlanId" >> $LOG_FILE
@@ -118,14 +121,15 @@ function promote() {
 
   ##### IMPLEMENT ME: promote the latest proxy config for sandbox environment #######
 
+  ##### IMPLEMENT ME: execute a rollout of your apicast-production dc (so that apicast-production pod syncs with AMP sooner rather than later)
+
 }
 
 function test() {
 
-  echo -en "\n\ntest() Will now test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
+  echo -en "\n\ntest() After your apicast-production dc has been redeployed, test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
 
-  ######  UNCOMMENT WHEN READY TO TEST    
-  # echo -en "\n`curl -v -k $vertx_prod_route/hello?user_key=$vertx_app_user_key`\n\n" >> $LOG_FILE
+  echo -en "\nIn particular, execute:\n\tcurl -v -k https://$vertx_prod_route/hello?user_key=$vertx_app_user_key\n\n" >> $LOG_FILE
 
 }
 
