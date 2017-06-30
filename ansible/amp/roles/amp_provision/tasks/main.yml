@@ -1,0 +1,237 @@
+---
+
+# Plagarized (and modified for this course) from:  https://github.com/nmasse-itix/OpenShift-Lab/tree/master/roles/3scale
+# Thank you nmasse-itix !
+#
+# It's highly recommended that this set of tasks found in this file be used as a student in this course only.
+# Afterwards, leverage (and contribute to) the original ansible playbook created by nmasse-itix.
+
+
+################            AMP Project and Template            #####################
+- name: Download {{ threescale_template }} and change all replicas to zero (replicas will be selectively spun up as needed in this ansible play)
+  get_url:
+    url: "{{ threescale_template }}"
+    dest: "{{modified_template_path}}"
+    force: yes
+- replace:
+    path: "{{ modified_template_path }}"
+    regexp: 'replicas: 1'
+    replace: 'replicas: 0'
+    backup: yes
+- replace:
+    path: "{{ modified_template_path }}"
+    regexp: 'type: ConfigChange'
+    replace: 'type: "[]"'
+    backup: no
+  tags: setup
+
+- name: Get a list of existing projects
+  command: oc get projects -o name
+  register: oc_get_projects
+  changed_when: false
+  tags: setup
+
+- name: Create a new project for 3scale
+  command: oc new-project "{{ threescale_project }}"
+  when: '"project/" ~ threescale_project not in oc_get_projects.stdout_lines'
+  tags: setup
+
+- name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
+  shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
+  register: oc
+  failed_when: oc.rc > 0 and 'Error from server (AlreadyExists):' not in oc.stderr
+  changed_when: oc.rc == 0
+  tags: setup
+
+- include: status.yml
+  tags: status
+
+
+
+
+
+
+#########################           AMP Storage Tier        #####################################
+- name: Deploy the storage tier (MySQL, Redis and Memcache) without any replicas
+  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - backend-redis
+    - system-memcache
+    - system-mysql
+    - system-redis
+  when: item not in deployment_configs
+  tags: amp_rollout
+
+- name: Scale the storage tier (MySQL, Redis and Memcache)
+  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+  with_items:
+    - backend-redis
+    - system-memcache
+    - system-mysql
+    - system-redis
+  when: item not in replication_controllers
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - backend-redis
+      - system-memcache
+      - system-mysql
+      - system-redis
+  tags: status
+
+- name: Deploy the backend-listener without any replicas
+  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - backend-listener
+  when: item not in deployment_configs
+  tags: amp_rollout
+
+- name: Scale backend-listener
+  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+  with_items:
+    - backend-listener
+  when: item not in replication_controllers
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - backend-listener
+  tags: status
+
+
+
+
+
+
+
+
+
+
+
+
+#########################           AMP System Tier        #####################################
+- name: Deploy everything else without any replicas
+  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - backend-worker
+    - system-app
+    - system-resque
+    - system-sidekiq
+    - backend-cron
+    - system-sphinx
+    - apicast-staging
+    - apicast-production
+  when: item not in deployment_configs
+  tags: amp_rollout
+
+- name: Scale system-app, system-resque and system-sidekiq
+  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+  with_items:
+    - system-app
+    - system-resque
+    - system-sidekiq
+  when: item not in replication_controllers
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - system-app
+      - system-resque
+      - system-sidekiq
+  tags: status
+
+- name: Scale backend-cron, backend-worker and system-sphinx
+  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+  with_items:
+    - backend-worker
+    - backend-cron
+    - system-sphinx
+  when: item not in replication_controllers
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - backend-worker
+      - backend-cron
+      - system-sphinx
+  tags: status
+
+- name: Deploy apicast-staging, apicast-production
+  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+  with_items:
+    - apicast-staging
+    - apicast-production
+  when: item not in replication_controllers
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - apicast-staging
+      - apicast-production
+  tags: status
+
+
+
+
+#####################           Routes          #################################
+- name: Delete generic apicast routes
+  command: oc delete route "{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - api-apicast-staging-route
+    - api-apicast-production-route
+    - "{{ vertx_stage_route.routename }}"
+    - "{{ vertx_prod_route.routename }}"
+  when: item in routes
+  tags: amp_rollout
+
+- name: Replace generic stage apicast routes with new routes whose name is more specific to our backend service
+  command: oc create route edge {{ item }} --service=apicast-staging --hostname="{{ vertx_stage_route.hostname }}" -n "{{ threescale_project }}"
+  with_items: 
+    - "{{ vertx_stage_route.routename }}"
+  tags: amp_rollout
+
+- name: Replace generic prod apicast routes with new routes whose name is more specific to our backend service
+  command: oc create route edge {{ item }} --service=apicast-production --hostname="{{ vertx_prod_route.hostname }}" -n "{{ threescale_project }}"
+  with_items: 
+    - "{{ vertx_prod_route.routename }}"
+  tags: amp_rollout
+
+
+
+
+
+
+########################            3Scale State        ##################################
+
+- name: Get Admin Username
+  command: oc get dc system-app -n "{{ threescale_project }}" -o 'jsonpath={.spec.template.spec.containers[0].env[?(@.name=="USER_LOGIN")].value}'
+  register: username
+  changed_when: false
+  tags: status
+
+- name: Get Admin Password
+  command: oc get dc system-app -n "{{ threescale_project }}" -o 'jsonpath={.spec.template.spec.containers[0].env[?(@.name=="USER_PASSWORD")].value}'
+  register: password
+  changed_when: false
+  tags: status
+
+- name: Get Admin ACCESS TOKEN
+  command: oc get dc system-app -n "{{ threescale_project }}" -o 'jsonpath={.spec.template.spec.containers[0].env[?(@.name=="ADMIN_ACCESS_TOKEN")].value}'
+  register: ON_PREM_ACCESS_TOKEN
+  changed_when: false
+  tags: status
+
+- name: 3scale is ready !
+  debug: msg="Login on https://{{ threescale_tenant_name }}-admin.{{ threescale_wildcard_domain }} with username = '{{ username.stdout }}' and password = '{{ password.stdout }} and addmin access token = '{{ ON_PREM_ACCESS_TOKEN.stdout }}' '"
+  tags: status

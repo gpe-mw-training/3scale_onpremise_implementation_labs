@@ -1,0 +1,25 @@
+---
+
+
+- name: Ensure environment variables are set!
+  debug: msg="tenant_name = {{ threescale_tenant_name }}, wildcard domain = {{ threescale_wildcard_domain }},  username = '{{ username.stdout }}',  password = '{{ password.stdout }}',  admin access token = '{{ ON_PREM_ACCESS_TOKEN.stdout }}' "
+- fail:
+    msg: "Please ensure the following variable is set: threescale_tenant_name"
+  when: "threescale_tenant_name is not defined"
+- fail:
+    msg: "Please ensure the following variable is set: threescale_wildcard_domain"
+  when: "threescale_wildcard_domain is not defined"
+- fail:
+    msg: "Please ensure the following variable is set: ON_PREM_ACCESS_TOKEN"
+  when: "ON_PREM_ACCESS_TOKEN is not defined"
+  tags: 3scale_resources
+
+
+- name: Execute shell script that creates 3Scale resources
+  script: refresh_3scale_resources.sh --threescale_tenant_name {{ threescale_tenant_name }} --ON_PREM_ACCESS_TOKEN {{ ON_PREM_ACCESS_TOKEN.stdout }} --OCP_WILDCARD_DOMAIN {{ threescale_wildcard_domain }} --vertx_prod_route {{ vertx_prod_route.hostname }} \
+          --API_RESPONSE_DIR {{ API_RESPONSE_DIR }} \
+          --LOG_FILE {{ PROVISION_3SCALE_LOG_FILE }}
+  tags: 3scale_resources
+
+- debug: msg="Review the following log file for details regarding provisioning of 3Scale resources = {{ PROVISION_3SCALE_LOG_FILE }} "
+  tags: 3scale_resources

@@ -1,0 +1,10 @@
+# Pre-reqs:
+#   1)  Install the following as root:    pip install jmespath
+
+- hosts: onprem-amp
+  remote_user: root
+  connection: local
+
+  roles:
+    - amp_provision 
+    - 3scale_resources
