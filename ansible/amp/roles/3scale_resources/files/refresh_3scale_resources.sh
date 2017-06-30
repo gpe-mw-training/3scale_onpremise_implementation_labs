@@ -77,9 +77,12 @@ function vertx_service() {
   echo -en "\nvertx_service() vertx_hit_metric_id = $vertx_hit_metric_id" >> $LOG_FILE
 
   # Review the Default Service Plan
-  curl -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/service_plans.xml" \
+  curl -f -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/service_plans.xml" \
        -d "access_token=$ON_PREM_ACCESS_TOKEN" \
        | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_default_service_plan.xml
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR in reviewing default service plan"; exit 1
+  fi
 
   eval vertx_servicePlanId=\"`xmlstarlet sel -t -m '//plan' -v 'id' -n $API_RESPONSE_DIR/vertx_default_service_plan.xml`\"
   echo -en "\nvertx_service() vertx_servicePlanId = $vertx_servicePlanId" >> $LOG_FILE
@@ -90,18 +93,83 @@ function custom_plans() {
 
   echo -en "\n\ncustom_plans() creating 3scale custom plans for vertx_service" >> $LOG_FILE
 
-  ##### IMPLEMENT ME: CREATION OF APP PLAN and HIT METRIC  #######
+  curl -f -v -k -X POST "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/application_plans.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "name=vertx_app_plan" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_app_plan_response.xml
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR in creating custom app plan"; exit 1
+  fi
 
-  ##### IMPLEMENT ME: CREATION OF ACCOUNT PLAN  #######
+  eval vertx_appPlanId=\"`xmlstarlet sel -t -m '//plan' -v 'id' -n $API_RESPONSE_DIR/vertx_app_plan_response.xml`\"
+
+  export vertx_hit_metric_limit_value=100
+  curl -f -v -k -X POST "https://$threescale_tenant_name-admin.${OCP_WILDCARD_DOMAIN}/admin/api/application_plans/$vertx_appPlanId/metrics/$vertx_hit_metric_id/limits.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "application_plan_id=$vertx_appPlanId" \
+       -d "period=minute" \
+       -d "value=$vertx_hit_metric_limit_value" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_hit_metric_limit_response.xml
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR in updating vertx_hit_metric_limit"; exit 1
+  fi
+
+  eval vertx_hit_metric_limitId=\"`xmlstarlet sel -t -m '//limit' -v 'id' -n $API_RESPONSE_DIR/vertx_hit_metric_limit_response.xml`\"
+
+  curl -v -k -X POST "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/account_plans.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "name=vertx_account_plan" \
+       -d "system_name=vertx_account_plan" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_account_plan_response.xml
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR in creating vertx account plan"; exit 1
+  fi
+
+  eval vertx_accountPlanId=\"`xmlstarlet sel -t -m '//plan' -v 'id' -n $API_RESPONSE_DIR/vertx_account_plan_response.xml`\"
+
 }
 
 function account() {
 
+
   echo -en "\n\naccount() creating account and user " >> $LOG_FILE
 
-  ##### IMPLEMENT CREATION OF ACCOUNT & USER.  ALSO, DETERMINE APP USER KEY  #######
+  # Determine if there is an exsiting vertx_account
+  curl -f -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/accounts.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/accounts_list.xml
+  eval vertx_accountId=\"`xmlstarlet sel -t -m '//account[org_name = "vertx_account"]' -v 'id' -n $API_RESPONSE_DIR/accounts_list.xml`\"
 
-  vertx_app_user_key=
+  # Delete existing vertx_account 
+  if [ "x$vertx_accountId" != "x" ]; then
+    echo -en "\naccount() will now delete account with Id = $vertx_accountId" >> $LOG_FILE
+
+    curl f -v -k -X DELETE "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/accounts/$vertx_accountId.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_service_delete_response.xml
+    OUT=$?
+    # curl returns a status code of 2 after having deleted an account; not sure why
+    if [ $OUT -ne 2 ]; then
+      echo "*** ERROR in deleting existing vertx_account() $OUT"; exit 1
+    fi
+  fi
+
+  export vertx_dev_email=jbride@redhat.com
+  export pleaseHackMePasswd=password
+  curl -v -k -X POST "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/signup.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "org_name=vertx_account" \
+       -d "username=vertx_dev" \
+       -d "email=$vertx_dev_email" \
+       -d "password=$pleaseHackMePasswd" \
+       -d "account_plan_id=$vertx_accountPlanId" \
+       -d "service_plan_id=$vertx_servicePlanId" \
+       -d "application_plan_id=$vertx_appPlanId" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_account_response.xml
+
+  eval vertx_accountId=\"`xmlstarlet sel -t -m '//account' -v 'id' -n $API_RESPONSE_DIR/vertx_account_response.xml`\"
+
+  eval vertx_app_user_key=\"`xmlstarlet sel -t -m '//account/applications/application[service_id = "'$vertx_serviceId'"]' -v 'user_key' -n $API_RESPONSE_DIR/vertx_account_response.xml`\"
   echo -en "\n\naccount() vertx_app_user_key determined to be: $vertx_app_user_key" >> $LOG_FILE
 
 }
@@ -109,14 +177,32 @@ function account() {
 function serviceProxy() {
   echo -en "\n\nserviceProxy() update service proxy " >> $LOG_FILE
 
-  ##### IMPLEMENT ME: Update service proxy with api_backend, endpoint and sandbox_endpoint  #######
+  eval vertx_service_ip=\"`oc get service vertx-greeting-service -n bservices --template "{{.spec.clusterIP}}"`\"
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR getting vertx_service_ip"; exit 1
+  fi
+
+  curl -v -k -X PATCH "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/proxy.xml" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "api_backend=http://$vertx_service_ip:8080" \
+       -d "endpoint=https://$vertx_prod_route:443" \
+       | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_service_proxy_update_response.xml
 }
 
 function promote() {
 
   echo -en "\n\npromote() " >> $LOG_FILE
 
-  ##### IMPLEMENT ME: promote the latest proxy config for sandbox environment #######
+  curl -v -k -X GET "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/proxy/configs/sandbox.json" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       | jq . > $API_RESPONSE_DIR/vertx_service_sandbox_proxy_config.json
+
+  eval vertx_service_sandbox_proxy_config_versionId=\"`cat $API_RESPONSE_DIR/vertx_service_sandbox_proxy_config.json | jq '.proxy_configs[-1].proxy_config.version'`\"
+
+  curl -v -k -X POST "https://3scale-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId/proxy/configs/sandbox/$vertx_service_sandbox_proxy_config_versionId/promote.json" \
+       -d "access_token=$ON_PREM_ACCESS_TOKEN" \
+       -d "to=production" \
+       | jq . > $API_RESPONSE_DIR/vertx_service_promotion_response.json
 
 }
 
@@ -124,8 +210,12 @@ function test() {
 
   echo -en "\n\ntest() Will now test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
 
-  ######  UNCOMMENT WHEN READY TO TEST    
-  # echo -en "\n`curl -v -k $vertx_prod_route/hello?user_key=$vertx_app_user_key`\n\n" >> $LOG_FILE
+  ######  UNCOMMENT WHEN READY TO TEST
+  eval results =\"`curl -f -v -k https://$vertx_prod_route/hello?user_key=$vertx_app_user_key`\"
+  if [ $? -ne 0 ]; then
+    echo "*** ERROR executing test"; exit 1
+  fi
+  echo -en "\ntest() result = $results\n" >> $LOG_FILE
 
 }
 
