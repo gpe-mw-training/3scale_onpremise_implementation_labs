@@ -10,8 +10,8 @@ threescale_retries: 30
 
 amp_admin_passwd: admin
 
-vertx_stage_route: {routename: "vertx-staging-apicast-route", hostname: "vertx-stage-apicast-{{ threescale_wildcard_domain }}" }
-vertx_prod_route: {routename: "vertx-prod-apicast-route", hostname: "vertx-prod-apicast-{{ threescale_wildcard_domain }}" }
+vertx_stage_route: {routename: "vertx-staging-apicast-route", hostname: "vertx-stage-apicast.{{ threescale_wildcard_domain }}" }
+vertx_prod_route: {routename: "vertx-prod-apicast-route", hostname: "vertx-prod-apicast.{{ threescale_wildcard_domain }}" }
 
 API_RESPONSE_DIR: /tmp/amp_api_responses
 PROVISION_3SCALE_LOG_FILE: "{{ API_RESPONSE_DIR }}/refresh_3scale_resources.log"
