@@ -1,6 +1,3 @@
-# Usage examples:
-  # refresh_3scale_resources.sh --threescale_tenant_name 3scale --OCP_WILDCARD_DOMAIN $OCP_WILDCARD_DOMAIN --ON_PREM_ACCESS_TOKEN x7fwv5s26cs7ymqr
-
 
 mkdir -p $API_RESPONSE_DIR
 
