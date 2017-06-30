@@ -152,11 +152,11 @@ while true; do
     esac
 done
 
-check_variables
-list_services
-vertx_service
-custom_plans
-account
-serviceProxy
-promote
+#check_variables
+#list_services
+#vertx_service
+#custom_plans
+#account
+#serviceProxy
+#promote
 test
