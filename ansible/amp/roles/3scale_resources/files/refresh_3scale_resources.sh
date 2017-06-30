@@ -40,7 +40,7 @@ function vertx_service() {
   if [ "x$vertx_serviceId" != "x" ]; then
     echo -en "\nvertx_service() will now delete service with Id = $vertx_serviceId" >> $LOG_FILE
 
-    curl f -v -k -X DELETE "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId.xml" \
+    curl -f -v -k -X DELETE "https://$threescale_tenant_name-admin.$OCP_WILDCARD_DOMAIN/admin/api/services/$vertx_serviceId.xml" \
        -d "access_token=$ON_PREM_ACCESS_TOKEN" \
        -d "system_name=vertx_service" \
        | xmlstarlet format --indent-tab > $API_RESPONSE_DIR/vertx_service_delete_response.xml
@@ -204,18 +204,19 @@ function promote() {
        -d "to=production" \
        | jq . > $API_RESPONSE_DIR/vertx_service_promotion_response.json
 
+  # execute a rollout of your apicast-production dc (so that apicast-production pod syncs with AMP sooner rather than later)
+  oc rollout latest apicast-production
+
+  # sleep 10 seconds to give apicast-production enough time to bounce
+sleep 10
+
 }
 
 function test() {
 
-  echo -en "\n\ntest() Will now test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
+  echo -en "\n\ntest() After your apicast-production dc has been redeployed, test vertx service via production apicast gateway using the following variables:\n\tvertx_prod_route = $vertx_prod_route \n\tvertx_app_user_key=$vertx_app_user_key\n" >> $LOG_FILE
 
-  ######  UNCOMMENT WHEN READY TO TEST
-  eval results =\"`curl -f -v -k https://$vertx_prod_route/hello?user_key=$vertx_app_user_key`\"
-  if [ $? -ne 0 ]; then
-    echo "*** ERROR executing test"; exit 1
-  fi
-  echo -en "\ntest() result = $results\n" >> $LOG_FILE
+  echo -en "\nIn particular, execute:\n\tcurl -v -k https://$vertx_prod_route/hello?user_key=$vertx_app_user_key\n\n" >> $LOG_FILE
 
 }
 
