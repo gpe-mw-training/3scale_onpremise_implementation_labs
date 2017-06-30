@@ -1,5 +1,6 @@
 # Pre-reqs:
 #   1)  Install the following as root:    pip install jmespath
+#       - doing so allows for use of json_query task
 
 - hosts: onprem-amp
   remote_user: root
