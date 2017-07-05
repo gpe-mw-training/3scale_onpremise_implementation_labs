@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  annotations:
+    pipeline.alpha.openshift.io/uses: '[{"name": "slave-test",  "kind": "DeploymentConfig"}]'
+  labels:
+    name: slave-test
+    template: slave-test
+  name: slave-test
+spec:
+  nodeSelector: null
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    type: None
+  strategy:
+    jenkinsPipelineStrategy:
+      env:
+        - name: "threescaleurl"
+        - name: "uatnamespace"
+      jenkinsfile: |-
+        node('maven') {
+            sh 'echo "hello jenkins slave:   mvn version = `mvn -v` " '
+
+            //sh 'oc get pods -n ${env.uatnamespace}'
+        }
+    type: JenkinsPipeline
+  triggers:
+  - github:
+      secret: secret101
+    type: GitHub
+  - generic:
+      secret: secret101
+    type: Generic
+
