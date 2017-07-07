@@ -1,5 +1,10 @@
 ---
 
+# In its current form, this ansible playbook doesn't do much.
+# Currently, all it does is call a bash shell script (refresh_3scale_resources.sh).
+#
+# As an alternative, this project could be refactored such that the contents of refresh_3scale_resources.sh could be moved to this ansible playbook.
+
 
 - name: Ensure environment variables are set!
   debug: msg="tenant_name = {{ threescale_tenant_name }}, wildcard domain = {{ threescale_wildcard_domain }},  username = '{{ username.stdout }}',  password = '{{ password.stdout }}',  admin access token = '{{ ON_PREM_ACCESS_TOKEN.stdout }}' "

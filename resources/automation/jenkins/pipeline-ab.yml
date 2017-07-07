@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  annotations:
+    pipeline.alpha.openshift.io/uses: '[{"name": "ab-pipeline",  "kind": "DeploymentConfig"}]'
+  labels:
+    name: ab-pipeline
+    template: ab-pipeline
+  name: ab-pipeline
+spec:
+  nodeSelector: null
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    type: None
+  strategy:
+    jenkinsPipelineStrategy:
+      env:
+        - name: "threescaleurl"
+          value: ""
+        - name: "uatnamespace"
+          value: ""
+      jenkinsfile: |-
+        node('maven') {
+            env.apiaccesstoken = "143d1a90ea5d369a88ec35310f06b86fec8569a1c34c21eaffc9f9906947962a";    
+            env.appplanid = "2357355891901";
+            env.metricsid = "2555417998898";
+            env.ablimit = 25;
+
+            env.uatnamespace = "bservices";
+            env.prodnamespace = "bservices-prod";
+
+            env.service_name_stable = "vertx-greeting-service"
+            env.service_tag_stable = "1.0"
+
+            env.service_name_new = "vertx-greeting-service-new"
+            env.service_tag_new = "1.1"
+
+            env.route_name = "vertxgreetingroute"
+  
+            stage('tagToNextReleaseInUAT') {
+                echo "tagToNextReleaseInUAT() : service_tag_stable = ${env.service_tag_stable};  service_tag_new = ${env.service_tag_new}"
+                openshiftTag 
+                        alias: "false",  
+                        namespace: "${env.uatnamespace}", 
+                        srcStream: "${env.service_name_stable}:${env.service_tag_stable}", 
+                        srcTag: "${env.service_tag_stable}", 
+                        destinationNamespace: "${env.uatnamespace}", 
+                        destStream: "${env.service_name_stable}:${env.service_tag_new}", 
+                        destTag: "latest", 
+                        verbose: "true"
+            }
+
+            stage('executeIntegrationTestsInUAT') {
+                echo "conductIntegrationTestsInUAT() "
+            }
+  
+            stage('tagLatestISFromUATtoProd'){
+                echo "tagLatestISFromUATtoProd() : UAT = ${env.uatnamespace}; PROD = ${env.prodnamespace}"
+
+                // equivalent:  oc tag bservices/vertx-greeting-service:1.1 bservices-prod/vertx-greeting-service:1.1
+                openshiftTag 
+                        alias: "false",  
+                        namespace: "${env.uatnamespace}", 
+                        srcStream: "${env.service_name_stable}:${env.service_tag_new}", 
+                        srcTag: "${env.service_tag_new}", 
+                        destinationNamespace: "${env.prodnamespace}", 
+                        destStream: "${env.service_name_stable}:${env.service_tag_new}", 
+                        destTag: "${env.service_tag_new}", 
+                        verbose: "true"
+            }
+  
+            stage('StartLatestService') {
+                print 'startLatestService() Create new DC from latest imagestream in prod' 
+                // equivalent: oc new-app --image-stream=vertx-greeting-service:1.1 --name=vertx-greeting-service-new
+
+                print 'startLatestService() Start ${env.service_tag_new} version of ${env.service_name_stable} in ${env.prodnamespace} with one pod running' 
+                openshiftScale 
+                        depCfg: "${env.service_name_new}", 
+                        namespace: "${env.prodnamespace}", 
+                        replicaCount: "1", 
+                        verifyReplicaCount: "true", 
+                        verbose: "true"
+            }
+  
+            stage('UpdateRouteToAB') { 
+                print 'UpdateRouteToAB() delete production route' 
+                openshiftDeleteResourceByKey 
+                        keys: "${env.route_name}", 
+                        namespace: "${env.prodnamespace}", 
+                        types: "route", 
+                        verbose: "true"
+    
+                print 'UpdateRouteToAB() create new route with a-b weights to both stable and new version of service' 
+                openshiftCreateResource 
+                        jsonyaml: "
+                            {
+                                "apiVersion": "v1",
+                                "kind": "Route",
+                                "metadata": {
+                                   "labels": {
+                                      "project": "${env.prodnamespace}"
+                                   },
+                                   "name": "${env.route_name}",
+                                   "namespace": "${env.prodnamespace}"
+                                },
+                                "spec": {
+                                   "host": "${env.route_name}-${env.prodnamespace}.${env.OCP_WILDCARD_DOMAIN}",
+                                   "alternateBackends": [
+                                      {
+                                         "kind": "Service",
+                                         "name": "${env.service_name_new}",
+                                         "weight": 30
+                                      }
+                                   ],
+                                   "to": {
+                                      "kind": "Service",
+                                      "name": "${env.service_name_stable}",
+                                      "weight": 70
+                                   },
+                                   "wildcardPolicy": "None"
+                                }
+                            }
+                                ",
+                        namespace: "${env.prodnamespace}", 
+                        verbose: "false"
+            }
+  
+            stage('GetCurrentLimitId') { 
+                print 'Get Current Limit Id'
+                env.LIMIT_ID = "broken";
+                echo env.LIMIT_ID
+            }
+  
+            stage('UpdateLimitToAB') { 
+                print 'Update 3scale Limit back to AB Testing mode'  
+                sh  "echo Updating Id ${env.LIMIT_ID} to less request ${env.ablimit} per min because of AB Testing"
+                sh  "curl -s -o /dev/null -w \"%{http_code}\\n\" -X PUT  \"${env.threescaleurl}/admin/api/application_plans/${env.appplanid}/metrics/${env.metricsid}/limits/${env.LIMIT_ID}.xml\" -d \'access_token=${env.apiaccesstoken}&amp;period=minute&amp;value=${env.ablimit}\'"  
+            }
+        }
+    type: JenkinsPipeline
+  triggers:
+  - github:
+      secret: secret101
+    type: GitHub
+  - generic:
+      secret: secret101
+    type: Generic
+
