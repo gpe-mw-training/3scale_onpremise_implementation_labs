@@ -16,6 +16,7 @@ java -DLISTENER_PORT=9080 -jar target/vertx-raml-1.0-fat.jar &
 
 Invoke the RESTful service:
     curl -l $HOSTNAME:9080/hello
+    curl -l $HOSTNAME:9080/goodbye
 
 View RAML documentation
     Open a browser and nagivate to the value of: echo http://$HOSTNAME:9080?raml=/api/hello.raml

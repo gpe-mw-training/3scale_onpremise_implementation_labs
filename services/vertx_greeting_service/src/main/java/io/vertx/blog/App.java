@@ -32,6 +32,12 @@ public class App extends AbstractVerticle {
           .end(new JsonObject().put("greeting", "Hello World!").encode());
     });
 
+    router.get("/goodbye").handler(rc -> {
+      rc.response()
+          .putHeader("content-type", "application/json")
+          .end(new JsonObject().put("greeting", "Good bye!").encode());
+    });
+
     // optionally enable the web console so users can play with your API
     // online from their web browsers
     router.route().handler(StaticHandler.create());
