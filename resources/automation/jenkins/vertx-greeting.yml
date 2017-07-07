@@ -5,13 +5,13 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: ${APPLICATION_NAME}-${TAG}
+    name: ${APP_NAME}
     labels:
-      app: ${APPLICATION_NAME}-${TAG}
+      app: ${APP_NAME}
   spec:
     replicas: 0
     selector:
-      app: ${APPLICATION_NAME}-${TAG}
+      app: ${APP_NAME}
     strategy:
       rollingParams:
         intervalSeconds: 1
@@ -23,12 +23,12 @@ objects:
     template:
       metadata:
         labels:
-          app: ${APPLICATION_NAME}-${TAG}
+          app: ${APP_NAME}
       spec:
         containers:
-        - image: CHANGE_ME 
-          imagePullPolicy: Always
-          name: ${APPLICATION_NAME}-${TAG}
+        - image: ${IMAGE_URL}
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}
           ports:
           - containerPort: 8080
             protocol: TCP
@@ -38,22 +38,19 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: ${APPLICATION_NAME}-${TAG}
+    name: ${APP_NAME}
     labels:
-      app: ${APPLICATION_NAME}-${TAG}
-    annotations:
-      description: The vertx-service http port
+      app: ${APP_NAME}
   spec:
     ports:
     - port: 8080
       targetPort: 8080
     selector:
-      app: ${APPLICATION_NAME}-${TAG}
-      deploymentconfig: ${APPLICATION_NAME}-${TAG}
+      app: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}
 
 parameters:
-- name: APPLICATION_NAME
+- name: APP_NAME
   required: true
-  value: vertx-greeting
-- name: TAG
+- name: IMAGE_URL
   required: true

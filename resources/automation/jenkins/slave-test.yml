@@ -17,14 +17,18 @@ spec:
     type: None
   strategy:
     jenkinsPipelineStrategy:
+      #  These environment variables don't seem to take affect
+      #  Also, doesn't appear to be a mechanism in the OCP GUI to add env vars to this BC 
       env:
         - name: "threescaleurl"
+          value: "test"
         - name: "uatnamespace"
+          value: "test1"
       jenkinsfile: |-
         node('maven') {
             sh 'echo "hello jenkins slave:   mvn version = `mvn -v` " '
 
-            //sh 'oc get pods -n ${env.uatnamespace}'
+            sh 'oc get pods -n ${env.uatnamespace}'
         }
     type: JenkinsPipeline
   triggers:
