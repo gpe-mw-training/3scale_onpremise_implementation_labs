@@ -5,6 +5,8 @@
 - hosts: onprem-amp
   remote_user: root
   connection: local
+  tasks:
+      - debug: msg="new project = {{threescale_project}}"
 
   roles:
     - amp_provision 
