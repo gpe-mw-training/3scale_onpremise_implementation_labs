@@ -22,6 +22,19 @@ spec:
           value: ""
         - name: "uatnamespace"
           value: ""
+        - name: "image_url_base"
+          value: "docker.io/rht/gptetraining"
+        - name: "ocp_resource_definition"
+          value: "https://github.com/gpe-mw-training/3scale_onpremise_implementation_labs/blob/master/resources/automation/jenkins/vertx-greeting.yml"
+        - name: "app_name_stable"
+          value: "vertx-greeting-1-0"
+        - name: "app_tag_stable"
+          value: "1.0"
+        - name: "app_name_new"
+          value: "vertx-greeting-1-1"
+          description: "You'll want to use a new version of the vertx service.  A new version is already provided to you that exposes an additional RESTful resource called:  link:https://github.com/gpe-mw-training/3scale_onpremise_implementation_labs/blob/new_vertx_api/services/vertx_greeting_service/src/main/java/io/vertx/blog/App.java#L35-L39[goodbye]"
+        - name: "app_tag_new"
+          value: "1.1"
       jenkinsfile: |-
         node('maven') {
             env.apiaccesstoken = "143d1a90ea5d369a88ec35310f06b86fec8569a1c34c21eaffc9f9906947962a";    
@@ -32,24 +45,21 @@ spec:
             env.uatnamespace = "bservices";
             env.prodnamespace = "bservices-prod";
 
-            env.service_name_stable = "vertx-greeting-service"
-            env.service_tag_stable = "1.0"
-
-            env.service_name_new = "vertx-greeting-service-new"
-            env.service_tag_new = "1.1"
-
             env.route_name = "vertxgreetingroute"
   
-            stage('tagToNextReleaseInUAT') {
-                echo "tagToNextReleaseInUAT() : service_tag_stable = ${env.service_tag_stable};  service_tag_new = ${env.service_tag_new}"
-                openshiftTag 
-                        alias: "false",  
-                        namespace: "${env.uatnamespace}", 
-                        srcStream: "${env.service_name_stable}:${env.service_tag_stable}", 
-                        srcTag: "${env.service_tag_stable}", 
-                        destinationNamespace: "${env.uatnamespace}", 
-                        destStream: "${env.service_name_stable}:${env.service_tag_new}", 
-                        destTag: "latest", 
+            stage('createLatestGreetingResourceInUAT') {
+                echo "createGreetingResourceInUAT()"
+                oc process -f ${env.ocp_resource_definition} -p APP_NAME=${env.app_name_new} -p "IMAGE_URL=${env.image_url_base}/vertx-greeting:${env.app_tag_new}" | oc create -n ${env.uatnamespace} -f -
+            }
+
+            stage('StartLatestServiceInUAT') {
+
+                print 'startLatestServiceInUAT() Start ${env.app_tag_new} version of ${env.app_name_stable} in ${env.uatnamespace} with one pod running' 
+                openshiftScale 
+                        depCfg: "${env.app_name_new}", 
+                        namespace: "${env.prodnamespace}", 
+                        replicaCount: "1", 
+                        verifyReplicaCount: "true", 
                         verbose: "true"
             }
 
@@ -57,28 +67,16 @@ spec:
                 echo "conductIntegrationTestsInUAT() "
             }
   
-            stage('tagLatestISFromUATtoProd'){
-                echo "tagLatestISFromUATtoProd() : UAT = ${env.uatnamespace}; PROD = ${env.prodnamespace}"
-
-                // equivalent:  oc tag bservices/vertx-greeting-service:1.1 bservices-prod/vertx-greeting-service:1.1
-                openshiftTag 
-                        alias: "false",  
-                        namespace: "${env.uatnamespace}", 
-                        srcStream: "${env.service_name_stable}:${env.service_tag_new}", 
-                        srcTag: "${env.service_tag_new}", 
-                        destinationNamespace: "${env.prodnamespace}", 
-                        destStream: "${env.service_name_stable}:${env.service_tag_new}", 
-                        destTag: "${env.service_tag_new}", 
-                        verbose: "true"
+            stage('createLatestGreetingResourceInProd') {
+                echo "createGreetingResourceInUAT()"
+                oc process -f ${env.ocp_resource_definition} -p APP_NAME=${env.app_name_new} -p "IMAGE_URL=${env.image_url_base}/vertx-greeting:${env.app_tag_new}" | oc create -n ${env.prodnamespace} -f -
             }
   
-            stage('StartLatestService') {
-                print 'startLatestService() Create new DC from latest imagestream in prod' 
-                // equivalent: oc new-app --image-stream=vertx-greeting-service:1.1 --name=vertx-greeting-service-new
+            stage('StartLatestServiceInProd') {
 
-                print 'startLatestService() Start ${env.service_tag_new} version of ${env.service_name_stable} in ${env.prodnamespace} with one pod running' 
+                print 'startLatestService() Start ${env.app_tag_new} version of ${env.app_name_stable} in ${env.prodnamespace} with one pod running' 
                 openshiftScale 
-                        depCfg: "${env.service_name_new}", 
+                        depCfg: "${env.app_name_new}", 
                         namespace: "${env.prodnamespace}", 
                         replicaCount: "1", 
                         verifyReplicaCount: "true", 
@@ -111,13 +109,13 @@ spec:
                                    "alternateBackends": [
                                       {
                                          "kind": "Service",
-                                         "name": "${env.service_name_new}",
+                                         "name": "${env.app_name_new}",
                                          "weight": 30
                                       }
                                    ],
                                    "to": {
                                       "kind": "Service",
-                                      "name": "${env.service_name_stable}",
+                                      "name": "${env.app_name_stable}",
                                       "weight": 70
                                    },
                                    "wildcardPolicy": "None"

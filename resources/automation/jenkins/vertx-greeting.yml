@@ -5,11 +5,13 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: vertx-greeting-service-${TAG}
+    name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
   spec:
     replicas: 0
     selector:
-      name: vertx-greeting-service-${TAG}
+      app: ${APP_NAME}
     strategy:
       rollingParams:
         intervalSeconds: 1
@@ -21,18 +23,34 @@ objects:
     template:
       metadata:
         labels:
-          name: vertx-greeting-service-${TAG}
+          app: ${APP_NAME}
       spec:
         containers:
-        - image: CHANGE_ME
-          imagePullPolicy: Always
-          name: vertx-greeting-service-${TAG}
+        - image: ${IMAGE_URL}
+          imagePullPolicy: IfNotPresent
+          name: ${APP_NAME}
           ports:
           - containerPort: 8080
             protocol: TCP
           resources: {}
           terminationMessagePath: /dev/termination-log
 
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
+  spec:
+    ports:
+    - port: 8080
+      targetPort: 8080
+    selector:
+      app: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}
+
 parameters:
-- name: TAG
+- name: APP_NAME
+  required: true
+- name: IMAGE_URL
   required: true
