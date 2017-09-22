@@ -186,7 +186,7 @@ objects:
           imagePullPolicy: Always
           resources:
             limits:
-            memory: '1Gi'
+              memory: '1Gi'
           lifecycle:
             preStop:
               exec:
