@@ -22,9 +22,7 @@ metadata:
     version: 1.0.0
   creationTimestamp: 2017-09-21T18:21:54Z
   name: sso71-mysql-persistent
-  namespace: jb-rht-sso
   resourceVersion: "54363"
-  selfLink: /oapi/v1/namespaces/jb-rht-sso/templates/sso71-mysql-persistent
   uid: beeb0d3b-9ef9-11e7-9a4e-16289a159cd8
 objects:
 - apiVersion: v1
