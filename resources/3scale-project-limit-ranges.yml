@@ -1,0 +1,30 @@
+# Purpose:
+#   * Assign project wide default limit and requests to kubernetes resources
+#   * Setting of limits and requests on all resources (including builder & deployer containers) is required if/when a clusterquota is active
+# Usage:
+#   * oc create -f ~/lab/3scale_onpremise_implementation_labs/resources/3scale-project-limit-ranges.yml --as=system:admin   
+# Notes:
+#   * Can be over-written by specifying limits and requests directly in yaml representation of resource (ie:  template)
+
+apiVersion: "v1"
+kind: "LimitRange"
+metadata:
+  name: "3scale-resource-limits"
+spec:
+  limits:
+    - type: "Pod"
+      max:
+        cpu: "2000m"
+        memory: "2Gi"
+      min:
+        cpu: "25m"
+        memory: "6Mi"
+
+    # These settings affect *-build &  *-deployer containers
+    - type: "Container"
+      default:
+        cpu: "250m"
+        memory: "250Mi"
+      defaultRequest:
+        cpu: "50m"
+        memory: "200Mi"
