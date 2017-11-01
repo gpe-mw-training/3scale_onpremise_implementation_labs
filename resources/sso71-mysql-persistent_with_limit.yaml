@@ -249,7 +249,7 @@ objects:
         - ${APPLICATION_NAME}
         from:
           kind: ImageStreamTag
-          name: redhat-sso71-openshift:1.1
+          name: redhat-sso71-openshift:1.1-16
           namespace: ${IMAGE_STREAM_NAMESPACE}
       type: ImageChange
     - type: ConfigChange
@@ -312,7 +312,8 @@ objects:
         from:
           kind: ImageStreamTag
           name: mysql:${MYSQL_IMAGE_STREAM_TAG}
-          namespace: ${IMAGE_STREAM_NAMESPACE}
+          # JA Bride: hard-coding to openshift namespace as mysql comes out of the box in that namespace even with oc cluster up
+          namespace: openshift
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
