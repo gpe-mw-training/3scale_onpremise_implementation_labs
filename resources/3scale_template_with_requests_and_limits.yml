@@ -167,9 +167,12 @@ objects:
           imagePullPolicy: Always
           name: backend-cron
           resources:
+            limits:
+              cpu: '100m'
+              memory: 250Mi
             requests:
               cpu: '100m'
-              memory: 500Mi
+              memory: 250Mi
     triggers:
     - type: ConfigChange
 
@@ -203,9 +206,12 @@ objects:
             periodSeconds: 30
             timeoutSeconds: 1
           resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 750Mi
           livenessProbe:
             tcpSocket:
               port: 6379
@@ -276,9 +282,12 @@ objects:
           imagePullPolicy: Always
           name: backend-listener
           resources:
+            limits:
+              cpu: '300m'
+              memory: 250Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 250Mi
           livenessProbe:
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -387,9 +396,12 @@ objects:
           imagePullPolicy: Always
           name: backend-worker
           resources:
+            limits:
+              cpu: '300m'
+              memory: 250Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 250Mi
     triggers:
     - type: ConfigChange
 
@@ -442,9 +454,12 @@ objects:
           name: system-redis
           terminationMessagePath: /dev/termination-log
           resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 750Mi
           volumeMounts:
           - name: system-redis-storage
             mountPath: "/var/lib/redis/data"
@@ -524,9 +539,12 @@ objects:
           - name: system-sphinx-database
             mountPath: "/opt/system/db/sphinx"
           resources:
+            limits:
+              cpu: '100m'
+              memory: 250Mi
             requests:
               cpu: '100m'
-              memory: 500Mi
+              memory: 250Mi
           env:
           - name: RAILS_ENV
             value: production
@@ -593,9 +611,12 @@ objects:
           imagePullPolicy: Always
           name: memcache
           resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 750Mi
           readinessProbe:
             exec:
               command:
@@ -716,9 +737,12 @@ objects:
           imagePullPolicy: Always
           name: apicast-staging
           resources:
+            limits:
+              cpu: '100m'
+              memory: 250Mi
             requests:
               cpu: '100m'
-              memory: 500Mi
+              memory: 250Mi
           livenessProbe:
             httpGet:
               path: /status/live
@@ -803,6 +827,9 @@ objects:
           imagePullPolicy: Always
           name: apicast-production
           resources:
+            limits:
+              cpu: '300m'
+              memory: 100Mi
             requests:
               cpu: '300m'
               memory: 100Mi
@@ -927,9 +954,12 @@ objects:
           command: ['env', 'TENANT_MODE=provider', 'PORT=3000', 'container-entrypoint', 'bundle', 'exec', 'unicorn', '-c', 'config/unicorn.rb']
           name: system-provider
           resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 750Mi
           livenessProbe:
             timeoutSeconds: 10
             initialDelaySeconds: 20
@@ -960,6 +990,13 @@ objects:
           command: ['env', 'TENANT_MODE=developer', 'PORT=3001', 'container-entrypoint', 'bundle', 'exec', 'unicorn', '-c', 'config/unicorn.rb']
           imagePullPolicy: Always
           name: system-developer
+          resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
+            requests:
+              cpu: '300m'
+              memory: 750Mi
           livenessProbe:
             timeoutSeconds: 10
             initialDelaySeconds: 20
@@ -1026,9 +1063,12 @@ objects:
           - name: system-storage
             mountPath: /opt/system/public/system
           resources:
+            limits:
+              cpu: '300m'
+              memory: 250Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 250Mi
         - args:
           - 'rake'
           - 'resque:scheduler'
@@ -1038,9 +1078,12 @@ objects:
           imagePullPolicy: Always
           name: system-scheduler
           resources:
+            limits:
+              cpu: '100m'
+              memory: 250Mi
             requests:
               cpu: '100m'
-              memory: 500Mi
+              memory: 250Mi
         volumes:
         - name: system-storage
           persistentVolumeClaim:
@@ -1078,9 +1121,12 @@ objects:
           imagePullPolicy: Always
           name: system-sidekiq
           resources:
+            limits:
+              cpu: '100m'
+              memory: 250Mi
             requests:
               cpu: '100m'
-              memory: 500Mi
+              memory: 250Mi
           volumeMounts:
           - name: system-storage
             mountPath: /opt/system/public/system
@@ -1113,9 +1159,12 @@ objects:
         - name: system-mysql
           image: ${MYSQL_IMAGE}
           resources:
+            limits:
+              cpu: '300m'
+              memory: 750Mi
             requests:
               cpu: '300m'
-              memory: 500Mi
+              memory: 750Mi
           ports:
           - containerPort: 3306
             protocol: TCP

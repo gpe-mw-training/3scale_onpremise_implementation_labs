@@ -22,7 +22,7 @@
   </properties>
 
   <modules>
-    <module>wf_swarm_datestamp_service</module>
+    <module>wfswarm-date-service</module>
     <module>vertx_greeting_service</module>
   </modules>
 
