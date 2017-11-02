@@ -186,7 +186,11 @@ objects:
           imagePullPolicy: Always
           resources:
             limits:
-              memory: '1Gi'
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '50m'
+              memory: 500Mi
           lifecycle:
             preStop:
               exec:
@@ -292,6 +296,13 @@ objects:
             value: ${MYSQL_AIO}
           image: mysql
           imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '50m'
+              memory: 250Mi
           name: ${APPLICATION_NAME}-mysql
           ports:
           - containerPort: 3306
