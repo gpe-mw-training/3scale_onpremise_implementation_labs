@@ -11,3 +11,10 @@ spec:
               value: ${TRUSTSTORE_PASS}
             - name: JAVA_OPTIONS
               value: "-Djavax.net.ssl.trustStore=/u02/certs/truststore.jks -Djavax.net.ssl.trustStorePassword=${TRUSTSTORE_PASS} -Djavax.net.debug=ssl"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
