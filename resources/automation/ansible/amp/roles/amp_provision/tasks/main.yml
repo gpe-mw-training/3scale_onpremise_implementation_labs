@@ -36,7 +36,7 @@
 - name: Create a new project for 3scale
   command: oc new-project "{{ threescale_project }}"
   when: '"project/" ~ threescale_project not in oc_get_projects.stdout_lines'
-  tags: setup
+  tags: project
 
 - name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
   shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
@@ -122,6 +122,8 @@
   command: oc patch dc/apicast-staging --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-staging", "env":[{"name":"APICAST_LOG_LEVEL","value":"debug" }] }]}}}}'
   tags: setup
 - command: oc patch dc/apicast-production --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-production", "env":[{"name":"APICAST_LOG_LEVEL","value":"debug" }] }]}}}}'
+  tags: setup
+- command: oc patch dc/apicast-production --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-production", "env":[{"name":"APICAST_CONFIGURATION_LOADER","value":"lazy" }] }]}}}}'
   tags: setup
 
 - name: Deploy everything else without any replicas
