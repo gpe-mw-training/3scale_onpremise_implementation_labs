@@ -4,7 +4,7 @@ require 'securerandom'
 enable :sessions
 set :session_secret, '*&(^B234'
 
-IDP_URL = ENV['IDP_URL'] || "http://localhost:8080"
+B_APP_URL = ENV['B_APP_URL'] || "http://localhost:8081/helloworld"
 CLIENT_ID = ENV['CLIENT_ID']
 CLIENT_SECRET = ENV['CLIENT_SECRET']
 REDIRECT_URI = ENV['REDIRECT_URI'] || "http://localhost:3001/callback"
