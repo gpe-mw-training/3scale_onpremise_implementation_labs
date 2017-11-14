@@ -8,8 +8,8 @@ IDP_URL = ENV['IDP_URL'] || "http://localhost:8080"
 CLIENT_ID = ENV['CLIENT_ID']
 CLIENT_SECRET = ENV['CLIENT_SECRET']
 REDIRECT_URI = ENV['REDIRECT_URI'] || "http://localhost:3001/callback"
-AUTHORIZE_ENDPOINT = "#{IDP_URL}/authorize"
-TOKEN_ENDPOINT = "#{IDP_URL}/oauth/token"
+AUTHORIZE_ENDPOINT = ENV['AUTHORIZE_ENDPOINT'] || "http://localhost:8080/authorize"
+TOKEN_ENDPOINT = ENV['TOKEN_ENDPOINT'] || "http://localhost:8080/oauth/token"
 
 get("/") do
   @state = SecureRandom.uuid
