@@ -30,7 +30,7 @@
   <div class="form-group">
     <label>Authorization Code: </label>
     <input type="text" name="code" value="<%= defined?(@code) ? @code : '' %>" />
-    <input type="hidden" name="response_type" value="token_response" />
+    <input type="hidden" name="response_type" value="response_token" />
   </div>
   <div class="form-group">
     <label>Client ID: </label>
@@ -50,13 +50,13 @@
 
 <h2>Step 3: Invoke Business Service at: <%= B_APP_URL %>  </h2>
 <p>
-   Access Token = <%= RESPONSE_TOKEN %>
+   Access Token = <%= @response_token %>
 </p>
 
 <form method="post" action="<%= B_APP_URL %>">
   <div class="form-group">
     <label>Access Token: </label>
-    <input type="text" name="Authorization" value="Bearer <%= defined?(@RESPONSE_TOKEN) ? @RESPONSE_TOKEN : '' %>" />
+    <input type="text" name="Authorization" value="Bearer <%= defined?(@response_token) ? @response_token : '' %>" />
   </div>
   <div class="form-group">
     <label>Redirect URL: </label>
