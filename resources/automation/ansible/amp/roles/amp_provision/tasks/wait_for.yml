@@ -1,6 +1,10 @@
 ---
 
-- name: Wait for all pending deployments to become ready
+# Manual Test :
+#  1) install jp :  https://github.com/jmespath/jp
+#  2) oc get rc -o json | jp 'items[?  status.replicas != `0` && (status.readyReplicas == ""|| status.readyReplicas == `0`) ].metadata.annotations."openshift.io/deployment-config.name"'
+#
+- name: "Wait for following deployments to become ready: {{pod_to_wait}}"
   command: 'oc get rc -o json -n "{{ threescale_project }}"'
   register: rc_state
   changed_when: false
