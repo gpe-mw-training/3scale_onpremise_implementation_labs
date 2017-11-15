@@ -151,24 +151,6 @@
   tags: status
 
 
-#################     Remaining DCs      #####################
-#
-- name: Resume zync, apicast-wildcard-router
-  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
-  with_items:
-    - zync
-    - apicast-wildcard-router
-  tags: amp_rollout
-
-- include: wait_for.yml
-  static: no
-  vars:
-    pod_to_wait:
-      - zync
-      - apicast-wildcard-router
-  tags: status
-
-
 #####################           Routes          #################################
 - name: Delete generic apicast routes
   command: oc delete route "{{ item }}" -n "{{ threescale_project }}"
