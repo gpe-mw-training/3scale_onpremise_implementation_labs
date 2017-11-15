@@ -8,30 +8,18 @@
 
 
 ################            AMP Project and Template            #####################
-- name: Download {{ threescale_template }} and change all replicas to zero (replicas will be selectively spun up as needed in this ansible play)
+- name: Download {{ threescale_template }}
   get_url:
     url: "{{ threescale_template }}"
     dest: "{{modified_template_path}}"
     force: yes
-  tags: setup
-- replace:
-    path: "{{ modified_template_path }}"
-    regexp: 'replicas: 1'
-    replace: 'replicas: 0'
-    backup: yes
-  tags: setup
-- replace:
-    path: "{{ modified_template_path }}"
-    regexp: 'type: ConfigChange'
-    replace: 'type: "[]"'
-    backup: no
   tags: setup
 
 - name: Get a list of existing projects
   command: oc get projects -o name
   register: oc_get_projects
   changed_when: false
-  tags: setup
+  tags: project
 
 - name: Create a new project for 3scale
   command: oc new-project "{{ threescale_project }}"
@@ -54,24 +42,14 @@
 
 
 #########################           AMP Storage Tier        #####################################
-- name: Deploy the storage tier (MySQL, Redis and Memcache) without any replicas
-  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
+- name: "Resume {{with_items}}"
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - backend-redis
     - system-memcache
     - system-mysql
     - system-redis
-  when: item not in deployment_configs
-  tags: amp_rollout
-
-- name: Scale the storage tier (MySQL, Redis and Memcache)
-  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
-  with_items:
-    - backend-redis
-    - system-memcache
-    - system-mysql
-    - system-redis
-  when: item not in replication_controllers
+    - zync-database
   tags: amp_rollout
 
 - include: wait_for.yml
@@ -82,20 +60,14 @@
       - system-memcache
       - system-mysql
       - system-redis
+      - zync-database
   tags: status
 
-- name: Deploy the backend-listener without any replicas
-  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
+- name: Resume backend-listener, backend-worker
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - backend-listener
-  when: item not in deployment_configs
-  tags: amp_rollout
-
-- name: Scale backend-listener
-  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
-  with_items:
-    - backend-listener
-  when: item not in replication_controllers
+    - backend-worker
   tags: amp_rollout
 
 - include: wait_for.yml
@@ -103,6 +75,7 @@
   vars:
     pod_to_wait:
       - backend-listener
+      - backend-worker
   tags: status
 
 
@@ -117,7 +90,43 @@
 
 
 #########################           AMP System Tier        #####################################
-#
+
+- name: system-provider and system-developer tier
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - system-app
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - system-app
+  tags: status
+
+- name: Resume system-resque system-sidekiq backend-cron and system-sphinx
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - system-resque
+    - system-sidekiq
+    - backend-cron
+    - system-sphinx
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - system-resque
+      - system-sidekiq
+      - backend-cron
+      - system-sphinx
+  tags: status
+
+
+
+#################     Gateway Tier      #####################
+
 - name: Setting debug log level for both production and staging apicast
   command: oc patch dc/apicast-staging --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-staging", "env":[{"name":"APICAST_LOG_LEVEL","value":"debug" }] }]}}}}'
   tags: setup
@@ -126,62 +135,11 @@
 - command: oc patch dc/apicast-production --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-production", "env":[{"name":"APICAST_CONFIGURATION_LOADER","value":"lazy" }] }]}}}}'
   tags: setup
 
-- name: Deploy everything else without any replicas
-  command: oc rollout latest "{{ item }}" -n "{{ threescale_project }}"
-  with_items:
-    - backend-worker
-    - system-app
-    - system-resque
-    - system-sidekiq
-    - backend-cron
-    - system-sphinx
-    - apicast-staging
-    - apicast-production
-  when: item not in deployment_configs
-  tags: amp_rollout
-
-- name: Scale system-app, system-resque and system-sidekiq
-  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
-  with_items:
-    - system-app
-    - system-resque
-    - system-sidekiq
-  when: item not in replication_controllers
-  tags: amp_rollout
-
-- include: wait_for.yml
-  static: no
-  vars:
-    pod_to_wait:
-      - system-app
-      - system-resque
-      - system-sidekiq
-  tags: status
-
-- name: Scale backend-cron, backend-worker and system-sphinx
-  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
-  with_items:
-    - backend-worker
-    - backend-cron
-    - system-sphinx
-  when: item not in replication_controllers
-  tags: amp_rollout
-
-- include: wait_for.yml
-  static: no
-  vars:
-    pod_to_wait:
-      - backend-worker
-      - backend-cron
-      - system-sphinx
-  tags: status
-
-- name: Deploy apicast-staging, apicast-production
-  command: oc scale dc "{{ item }}" --replicas=1 -n "{{ threescale_project }}"
+- name: Resume apicast-staging, apicast-production
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - apicast-staging
     - apicast-production
-  when: item not in replication_controllers
   tags: amp_rollout
 
 - include: wait_for.yml
@@ -193,6 +151,22 @@
   tags: status
 
 
+#################     Remaining DCs      #####################
+#
+- name: Resume zync, apicast-wildcard-router
+  command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
+  with_items:
+    - zync
+    - apicast-wildcard-router
+  tags: amp_rollout
+
+- include: wait_for.yml
+  static: no
+  vars:
+    pod_to_wait:
+      - zync
+      - apicast-wildcard-router
+  tags: status
 
 
 #####################           Routes          #################################

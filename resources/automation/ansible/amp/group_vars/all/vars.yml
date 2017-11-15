@@ -1,13 +1,12 @@
-# v2.0.0.GA-redhat-2
-#threescale_template: https://raw.githubusercontent.com/3scale/3scale-amp-openshift-templates/2.0.0.GA-redhat-2/amp/amp.yml
-threescale_template: https://raw.githubusercontent.com/gpe-mw-training/3scale_onpremise_implementation_labs/master/resources/3scale_template_with_requests_and_limits.yml
+#threescale_template: https://raw.githubusercontent.com/gpe-mw-training/3scale_onpremise_implementation_labs/master/resources/3scale-amp-2.1.yml
+threescale_template: file:///tmp/3scale-amp-2.1.yml
 
 modified_template_path: /tmp/amp.yml
 
 threescale_project: "{{OCP_PROJECT_PREFIX}}-3scale-ansible"
 threescale_tenant_name: 3scale
 threescale_wildcard_domain: "{{ openshift_master_default_subdomain }}"
-threescale_delay: 5
+threescale_delay: 10
 threescale_retries: 30
 
 amp_admin_passwd: admin
