@@ -1156,6 +1156,7 @@ objects:
     selector:
       deploymentconfig: apicast-wildcard-router
 
+# JA Bride:  Changed host to include TENANT_NAME
 - apiVersion: v1
   kind: Route
   metadata:
@@ -1163,7 +1164,7 @@ objects:
     labels:
       app: apicast-wildcard-router
   spec:
-    host: apicast-wildcard.${WILDCARD_DOMAIN}
+    host: ${TENANT_NAME}-apicast-wildcard.${WILDCARD_DOMAIN}
     to:
       kind: Service
       name: apicast-wildcard-router
