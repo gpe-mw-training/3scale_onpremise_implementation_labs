@@ -190,7 +190,7 @@ objects:
               cpu: '2'
               memory: 2Gi
             requests:
-              cpu: '50m'
+              cpu: '500m'
               memory: 500Mi
           lifecycle:
             preStop:
@@ -303,7 +303,7 @@ objects:
               cpu: '2'
               memory: 2Gi
             requests:
-              cpu: '50m'
+              cpu: '500m'
               memory: 250Mi
           name: ${APPLICATION_NAME}-mysql
           ports:
