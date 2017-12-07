@@ -106,6 +106,7 @@ objects:
       application: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
   spec:
+    paused: true
     replicas: 1
     selector:
       deploymentConfig: ${APPLICATION_NAME}
@@ -186,8 +187,8 @@ objects:
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: '1'
-              memory: 1Gi
+              cpu: '2'
+              memory: 2Gi
             requests:
               cpu: '50m'
               memory: 500Mi
@@ -264,6 +265,7 @@ objects:
       application: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}-mysql
   spec:
+    paused: true
     replicas: 1
     selector:
       deploymentConfig: ${APPLICATION_NAME}-mysql
@@ -298,8 +300,8 @@ objects:
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: '1'
-              memory: 1Gi
+              cpu: '2'
+              memory: 2Gi
             requests:
               cpu: '50m'
               memory: 250Mi
