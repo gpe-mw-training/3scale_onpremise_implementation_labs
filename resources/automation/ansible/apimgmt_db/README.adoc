@@ -1,0 +1,38 @@
+
+= API Mgmt External Database
+
+:numbered:
+
+== Overview
+
+== Test Connectivity to External DBs
+
+. Smoke test the `backend-redis` database:
++
+-----
+$ redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $REDIS_PORT PING
+-----
+
+. Smoke test the `system-redis` database:
++
+-----
+$ redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $SYSTEM_REDIS_PORT PING
+-----
+
+. Smoke test the `system` database of remote MySQL Database
++
+-----
+$ mysql -h $MYSQL_HOST -u root -p"$MYSQL_ROOT_PASSWORD" system_$OCP_USER_ID -e 'select 1'
+-----
+
+. Smoke test the `ZYNC_PRODUCTION` database:
++
+-----
+# The following should return the password to the remote postgresql
+$ echo $PGPASSWORD
+
+$ psql -h $PSQL_HOST -U $OCP_USER_ID zync_production_$OCP_USER_ID -c 'select 1'
+----- 
+
+See link:https://issues.jboss.org/browse/THREESCALE-603?filter=12314582[this jira] for an explanation.
+

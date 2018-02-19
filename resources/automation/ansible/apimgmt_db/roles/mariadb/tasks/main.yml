@@ -1,0 +1,49 @@
+---
+
+- name: Install MariaDb and MySQL-python (so as to be able to use  "mysql_user" ansible module)
+  yum: name=mariadb-server state=present
+- yum: name=MySQL-python state=present
+
+- name: Create installation directory
+  file: path={{install_script_dir}}/{{mysql_install_script_dir}} state=directory mode=0755
+
+- name : Copy installation files
+  copy: src=install/ dest={{install_script_dir}}/{{mysql_install_script_dir}}
+
+- name: Set file permissions
+  file: 
+    path={{install_script_dir}}/{{mysql_install_script_dir}}/{{item}} 
+    mode=0775
+  with_items:
+    - run-mysqld.sh
+    - scripts/common.sh
+
+- name: Configure Mariadb
+  shell: 
+    '{{install_script_dir}}/{{mysql_install_script_dir}}/run-mysqld.sh >> {{install_script_dir}}/mysqld-install-log.txt
+    creates={{install_script_dir}}/mysqld-install-log.txt'
+  environment:
+    MYSQL_LOWER_CASE_TABLE_NAMES: 1
+    MYSQL_ROOT_PASSWORD: "{{ MYSQL_ROOT_PASSWORD }}"
+
+- name: Start Mariadb
+  service: name=mariadb state=started
+
+- name: Enable Mariadb
+  service: name=mariadb enabled=yes
+
+- name: Create system_* databases
+  mysql_db:
+    name: "system_{{item}}"
+    state: present
+  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
+
+# Test: mysql -h 192.168.122.209 -u user7 -p"uweriwerk38IEuwUG8)2cw"
+- name: Configure users
+  mysql_user:
+    name: "{{ item }}"
+    password: "{{ MYSQL_USER_PASSWORD }}"
+    priv: 'system_{{item}}.*:ALL,GRANT'
+    host: "%"
+    state: present
+  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"

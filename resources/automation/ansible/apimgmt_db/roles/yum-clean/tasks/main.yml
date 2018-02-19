@@ -1,0 +1,8 @@
+- name: cleaning task for yum
+  command: /usr/bin/yum clean all
+
+- name: delete cache files
+  file: path=/var/cache/{{ item }}
+        state=absent
+  with_items:
+    - yum

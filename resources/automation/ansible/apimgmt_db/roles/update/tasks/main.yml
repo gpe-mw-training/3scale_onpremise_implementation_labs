@@ -1,0 +1,7 @@
+---
+- name: Install deltarpm
+  yum: name=deltarpm state=present
+
+- name: Update all packages
+  yum: name=* state=latest
+  register: updatepackages

@@ -1,0 +1,4 @@
+---
+
+- name: Disble SELinux
+  selinux: state=disabled

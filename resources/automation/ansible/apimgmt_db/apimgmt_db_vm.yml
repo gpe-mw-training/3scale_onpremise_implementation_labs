@@ -1,0 +1,25 @@
+- hosts: apimgmt_db_vm
+  remote_user: root
+  vars_prompt:
+    - name: is_ravello
+      prompt: "Is this a VM that will be managed by GPTE CloudForms (y/n)? "
+      default: "y"
+      private: no
+
+  roles:
+    - hostname
+    - update
+
+#   - epel                      # centos only
+    - geerlingguy.repo-epel     # rhel; need to execute the following beforehand:  sudo ansible-galaxy install geerlingguy.repo-epel
+ 
+    - tools
+    - selinux
+    - reboot
+    - useradd
+    - firewalld
+    - yum-clean
+
+    - mariadb
+
+#    - rhn_unsubscribe

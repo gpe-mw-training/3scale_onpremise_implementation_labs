@@ -1,0 +1,7 @@
+---
+
+# VMs managed by GPTE CloudForms automatically get their hostname set
+- name: set hostname to {{hostname}} only if is_ravello = n ;  {{is_ravello}}
+  hostname:
+    name: "{{hostname}}"
+  when: is_ravello == "n"

@@ -1,0 +1,5 @@
+- hosts: ocp_vm
+  remote_user: root
+
+  roles:
+    - db_tools

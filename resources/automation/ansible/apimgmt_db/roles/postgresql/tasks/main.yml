@@ -1,0 +1,55 @@
+---
+
+# https://developers.redhat.com/blog/2016/07/28/postgresql-and-mongodb-software-collections-three-easy-steps-to-get-started/
+
+- name: Install PostgreSQL (v9.5 from RHT Software Collections) and pythonpsycopg2 (so as to be able to use  "python-psycopg2" ansible module)
+  yum: name=rh-postgresql95-postgresql-server,rh-postgresql95-postgresql-contrib,python-psycopg2 state=present
+
+- name: "Check if initialized postgresql directory already exists; {{ PSQL_DATA_DIR }}/postgresql.conf"
+  stat: path={{ PSQL_DATA_DIR }}/postgresql.conf
+  register: postgresql_initdb_result
+
+- name: Configure PostgreSQL
+  shell:
+    "{{ PSQL_INSTALL_DIR}}/root/bin/postgresql-setup initdb"
+  when: not postgresql_initdb_result.stat.exists
+
+- name : Copy installation files
+  copy: 
+    src:  pg_hba.conf
+    dest: "{{ PSQL_DATA_DIR }}"
+    owner: postgres
+    group: postgres
+
+- name : Copy installation files
+  copy: 
+    src:  postgresql.conf
+    dest: "{{ PSQL_DATA_DIR }}"
+    owner: postgres
+    group: postgres
+
+- name: Start PostgreSQL service
+  service: name=rh-postgresql95-postgresql state=started
+
+- name: Enable PostgreSQL service
+  service: name=rh-postgresql95-postgresql enabled=yes
+
+- name: Create zync_production_* databases
+  postgresql_db:
+    name: "zync_production_{{item}}"
+    state: present
+  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
+  become: yes
+  become_user: postgres
+
+# Test: PGPASSWORD="uweriwerk38IEuwUG8)2cw" psql -h 192.168.122.209 -U user7 zync_production_user7
+- name: Configure users
+  postgresql_user:
+    db: "zync_production_{{item}}"
+    name: "{{ item }}"
+    password: "{{ PSQL_USER_PASSWORD }}"
+    priv: "ALL"
+    state: present
+  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
+  become: yes
+  become_user: postgres

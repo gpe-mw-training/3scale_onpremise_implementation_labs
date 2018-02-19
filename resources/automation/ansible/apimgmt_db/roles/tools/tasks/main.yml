@@ -1,0 +1,12 @@
+---
+
+- name: Enable Extras (which contains docker), supplementary and Optional channels
+  shell: "subscription-manager repos --enable={{extras_channel}} --enable={{supplementary_channel}} --enable={{optional_channel}} --enable={{rhscl_channel}}"
+  tags:
+    - rhel
+
+- name: Install tools
+  yum: name=git,zip,bzip2,unzip,gettext,wget,curl,telnet,tree,bind-utils state=present
+
+- name: Ensure that several packages are explicitly not installed
+  yum: name=httpd,libvirtd,tomcat,guacamole state=absent

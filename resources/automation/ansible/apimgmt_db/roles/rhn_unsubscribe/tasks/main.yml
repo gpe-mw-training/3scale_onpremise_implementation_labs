@@ -1,0 +1,6 @@
+---
+
+- name: Unsubscribe from RHN
+  shell: "subscription-manager unsubscribe --all"
+  tags:
+    - rhel

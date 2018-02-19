@@ -1,0 +1,43 @@
+---
+
+# https://www.softwarecollections.org/en/scls/rhscl/rh-redis32/
+#
+# Test
+#   /opt/rh/rh-redis32/root/bin/redis-cli PING
+
+#- name: Install Redis from RHT Software Collections
+#  yum: name=rh-redis32 state=present
+
+- name: Ensure Redis starts on all NICs
+  replace:
+    path: "/etc/opt/rh/{{REDIS_VERSION}}/redis.conf"
+    regexp: '^bind 127.0.0.1'
+    replace: '#bind 127.0.0.1'
+    owner: redis
+
+# Appears there is not a mechanism to specify a password to the Redis database from the 3scale AMP pods that make use of redis
+# https://access.redhat.com/support/cases/#/case/01997657
+#- name: Set a password for Redis
+#  replace:
+#    path: "/etc/opt/rh/{{REDIS_VERSION}}/redis.conf"
+#    regexp: '^# requirepass foobared'
+#    replace: 'requirepass {{REDIS_PASSWORD}}'
+#    owner: redis
+
+- name: Disable protected-mode on Redis
+  replace:
+    path: "/etc/opt/rh/{{REDIS_VERSION}}/redis.conf"
+    regexp: '^protected-mode yes'
+    replace: 'protected-mode no'
+    owner: redis
+
+- name: Start Redis service
+  service: name=rh-redis32-redis state=started
+
+- name: Enable Redis service
+  service: name=rh-redis32-redis enabled=yes
+
+- name: Test Redis Connection
+  shell:
+    "/opt/rh/{{ REDIS_VERSION}}/root/bin/redis-cli -h {{hostname}} -a {{REDIS_PASSWORD}} PING"
+

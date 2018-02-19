@@ -1,0 +1,38 @@
+---
+
+- name: Install firewalld
+  yum: 
+    name: firewalld 
+    state: present
+
+- name: bounce firewalld
+  command: systemctl enable firewalld.service
+- command: systemctl restart firewalld.service
+
+####################################################################################
+#  OCP related requirements
+
+- name: Configure firewalld to allow for remote access to mysql
+  firewalld:
+    port: 3306/tcp
+    permanent: true
+    state: enabled
+
+- name: Configure firewalld to allow for remote access to mysql
+  firewalld:
+    port: 5432/tcp
+    permanent: true
+    state: enabled
+
+- name: Configure firewalld to allow for remote access to redis
+  firewalld:
+    port: 6379/tcp
+    permanent: true
+    state: enabled
+
+-  command: firewall-cmd --permanent --zone public --add-source 172.17.0.0/16
+
+- name: bounce firewalld
+  command: systemctl restart firewalld.service
+
+####################################################################################

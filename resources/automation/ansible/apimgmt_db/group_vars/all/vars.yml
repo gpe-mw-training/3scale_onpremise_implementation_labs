@@ -1,0 +1,26 @@
+user: jboss
+home_dir: /home/{{user}}
+lab_home_dir: /home/{{user}}/lab
+install_script_dir: /opt/install/scripts
+download_dir: /opt/download
+hostname: apimgmtdb
+
+extras_channel: rhel-7-server-extras-rpms
+supplementary_channel: rhel-7-server-supplementary-rpms
+optional_channel: rhel-7-server-optional-rpms
+rhscl_channel: rhel-server-rhscl-7-rpms
+
+mysql_install_script_dir: mysql
+MYSQL_ROOT_PASSWORD: 2uriwer_qcl41tiedcn54l
+MYSQL_USER_PASSWORD: uweriwerk38IEuwUG872cw
+
+PSQL_INSTALL_DIR: /opt/rh/rh-postgresql95
+PSQL_DATA_DIR: /var/opt/rh/rh-postgresql95/lib/pgsql/data/
+PSQL_USER_PASSWORD: uweriwerk38IEuwUG872cw
+
+REDIS_VERSION: rh-redis32
+REDIS_INSTALL_DIR: /opt/rh/{{REDIS_VERSION}}
+REDIS_PASSWORD: 2uriwer_qcl41tiedcn54l81lwrnc023wedfslq3vnmcs430
+
+start_userID: 1
+end_userID: 10

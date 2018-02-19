@@ -1,0 +1,6 @@
+[ocp_vm]
+<ip address of OCP virtual machine>
+
+[apimgmt_db_vm]
+<ip address of database virtual machine>
+
