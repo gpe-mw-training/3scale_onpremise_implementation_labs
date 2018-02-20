@@ -1,9 +1,26 @@
 
 = API Mgmt External Database
 
+
+
 :numbered:
 
 == Overview
+
+Purpose of this ansible project is to provision a single virtual machine with standalone databases required by a 3scale AMP environment.
+
+The 3scale AMP environment is most likely running in an OCP environment (external to this VM) and connects to the DBs on this virtual machine.
+
+The following databases are provisioned:
+
+. *mariadb*
+. *postgresql*
+. *redis*
+
+This ansible script and the corresponding VM that it builds is used for learning purposes only.
+The databases provisioned by this ansible are not in an HA configuration.
+
+
 
 == Test Connectivity to External DBs
 
