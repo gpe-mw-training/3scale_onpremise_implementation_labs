@@ -23,7 +23,7 @@
     regexp: '^# requirepass foobared'
     replace: 'requirepass {{REDIS_PASSWORD}}'
     owner: redis
-  when: SET_REDIS_PASSWORD
+  when: SET_REDIS_PASSWORD == true
 
 - name: Disable protected-mode on Redis
   replace:

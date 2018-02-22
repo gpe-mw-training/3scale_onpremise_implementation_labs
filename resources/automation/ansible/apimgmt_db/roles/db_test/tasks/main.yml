@@ -13,6 +13,17 @@
   shell: |
        redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
 
-- name: Test connection to system-redis database 
+- name: Test connection to system-redis database using a password
   shell: |
        redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
+  when: SET_REDIS_PASSWORD == true
+
+- name: Test connection to system-redis database without using a password
+  shell: |
+       redis-cli -h {{apimgmt_db_vm}} PING
+  when: SET_REDIS_PASSWORD == false
+
+# Other potential redis related checks:
+#   1) redis-cli -h {{apimgmt_db_vm}} CONFIG GET databases
+#   2) redis-cli -h {{apimgmt_db_vm}} INFO keyspace
+#   3) redis-cli -h {{apimgmt_db_vm}} INFO | grep ^db

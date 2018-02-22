@@ -1,16 +1,16 @@
 - hosts: apimgmt_db_vm
   remote_user: root
   roles:
-#    - update
-#    - tools
-#    - selinux
-#    - reboot
-#    - useradd
-#    - firewalld
-#    - yum-clean
+    - update
+    - tools
+    - selinux
+    - reboot
+    - useradd
+    - firewalld
+    - yum-clean
 
-#    - mariadb
-#    - postgresql
+    - mariadb
+    - postgresql
     - redis
 
 #    - rhn_unsubscribe
