@@ -1,10 +1,10 @@
-user: jboss
-home_dir: /home/{{user}}
-lab_home_dir: /home/{{user}}/lab
-install_script_dir: /opt/install/scripts
-download_dir: /opt/download
-hostname: apimgmtdb
+os_user: jboss
+db_user: jboss
+apimgmt_db_vm: 192.168.122.167
 
+install_script_dir: /opt/install/scripts
+
+# RHN channels (if using RHEL 7)
 extras_channel: rhel-7-server-extras-rpms
 supplementary_channel: rhel-7-server-supplementary-rpms
 optional_channel: rhel-7-server-optional-rpms
@@ -21,6 +21,3 @@ PSQL_USER_PASSWORD: uweriwerk38IEuwUG872cw
 REDIS_VERSION: rh-redis32
 REDIS_INSTALL_DIR: /opt/rh/{{REDIS_VERSION}}
 REDIS_PASSWORD: 2uriwer_qcl41tiedcn54l81lwrnc023wedfslq3vnmcs430
-
-start_userID: 1
-end_userID: 10

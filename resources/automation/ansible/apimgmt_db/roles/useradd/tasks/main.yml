@@ -23,15 +23,12 @@
             PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[33m\]$ADD_PS1\[\033[34m\] \$\[\033[00m\] "
         fi
 
-- name: Create {{user}} operating system user with ability to control docker
-  user: name={{user}} groups=users password={{password}}
-
-- name: Ensure /opt directory is owned by {{user}}:{{user}}
+- name: Ensure /opt directory is owned by {{os_user}}:{{os_user}}
   file: 
     path: "/opt"
     state: directory 
-    owner: "{{user}}"
-    group: "{{user}}"
+    owner: "{{os_user}}"
+    group: "{{os_user}}"
 
   
 

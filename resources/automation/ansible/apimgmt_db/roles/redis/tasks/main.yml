@@ -39,5 +39,5 @@
 
 - name: Test Redis Connection
   shell:
-    "/opt/rh/{{ REDIS_VERSION}}/root/bin/redis-cli -h {{hostname}} -a {{REDIS_PASSWORD}} PING"
+    "/opt/rh/{{ REDIS_VERSION}}/root/bin/redis-cli -h {{apimgmt_db_vm}} -a {{REDIS_PASSWORD}} PING"
 

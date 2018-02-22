@@ -34,16 +34,14 @@
 
 - name: Create system_* databases
   mysql_db:
-    name: "system_{{item}}"
+    name: "system_{{db_user}}"
     state: present
-  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
 
 # Test: mysql -h 192.168.122.209 -u user7 -p"uweriwerk38IEuwUG8)2cw"
 - name: Configure users
   mysql_user:
-    name: "{{ item }}"
+    name: "{{ db_user }}"
     password: "{{ MYSQL_USER_PASSWORD }}"
-    priv: 'system_{{item}}.*:ALL,GRANT'
+    priv: 'system_{{db_user}}.*:ALL,GRANT'
     host: "%"
     state: present
-  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"

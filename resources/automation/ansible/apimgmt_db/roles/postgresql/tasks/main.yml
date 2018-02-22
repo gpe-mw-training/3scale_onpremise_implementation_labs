@@ -36,20 +36,18 @@
 
 - name: Create zync_production_* databases
   postgresql_db:
-    name: "zync_production_{{item}}"
+    name: "zync_production_{{db_user}}"
     state: present
-  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
   become: yes
   become_user: postgres
 
 # Test: PGPASSWORD="uweriwerk38IEuwUG8)2cw" psql -h 192.168.122.209 -U user7 zync_production_user7
 - name: Configure users
   postgresql_user:
-    db: "zync_production_{{item}}"
-    name: "{{ item }}"
+    db: "zync_production_{{db_user}}"
+    name: "{{ db_user }}"
     password: "{{ PSQL_USER_PASSWORD }}"
     priv: "ALL"
     state: present
-  with_sequence: "start={{start_userID}} end={{end_userID}} format=user%d"
   become: yes
   become_user: postgres

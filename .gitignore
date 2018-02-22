@@ -15,7 +15,9 @@ LMSClass/
 *.classpath
 *.project
 *.settings/
+*.retry
 build.metadata
 .metadata
 target/
 test.yml
+hosts

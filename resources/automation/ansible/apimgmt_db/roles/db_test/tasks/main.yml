@@ -1,0 +1,18 @@
+---
+
+- name: Test connection to mysql at {{apimgmt_db_vm}}
+  shell: |
+       mysql -h {{apimgmt_db_vm}} -u root -p{{MYSQL_ROOT_PASSWORD}} system_{{db_user}} --execute="select 1"
+
+- name: Test connection to postgresql
+  shell: |
+       export PGPASSWORD={{PSQL_USER_PASSWORD}} && \
+       psql -h {{apimgmt_db_vm}} -U {{db_user}} zync_production_{{db_user}} -c 'select 1'
+
+- name: Test connection to backend-redis database 
+  shell: |
+       redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $REDIS_PORT PING
+
+- name: Test connection to system-redis database 
+  shell: |
+       redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $REDIS_PORT PING

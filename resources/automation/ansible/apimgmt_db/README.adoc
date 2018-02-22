@@ -11,7 +11,7 @@ Purpose of this ansible project is to provision a single virtual machine with st
 
 The 3scale AMP environment is most likely running in an OCP environment (external to this VM) and connects to the DBs on this virtual machine.
 
-The following databases are provisioned:
+The following databases are provisioned on this virtual machine:
 
 . *mariadb*
 . *postgresql*
@@ -20,9 +20,49 @@ The following databases are provisioned:
 This ansible script and the corresponding VM that it builds is used for learning purposes only.
 The databases provisioned by this ansible are not in an HA configuration.
 
+== Ansible Inventory File
 
+There are two virtual machines that are referenced in this ansible project:
 
-== Test Connectivity to External DBs
+. *ocp_vm*
++
+This is the OpenShift environment where your 3scale AMP is installed.
+This is ansible project assumes this environment already exists.
+It optionally connects to this environment to install database clients and create test connections to databases provisioned in your _apimgmt_db_vm_ .
+The ansible role that installs this database client tooling is called:  _db_tools_.
+
+. *apimgmt_db_vm*
++
+This is the virtual machine where the databases to be used by 3scale AMP are provisioned.
+This ansible project assists with provisioning this virtual machine.
+
+You will see both of these host names listed at the root of this project in:  hosts.example.
+
+Rename this file to simply:  `hosts`.
+Afterwards, edit this file with the IPs of your two virtual machines.
+
+== apimgmt_db_vm
+This ansible project assumes that you have already provisioned a virtual machine with the following:
+
+. _minimal_ install of either RHEL7 or a derivative (ie:  Centos).
+. 2 GBs RAM
+. 2 CPUs
+
+-----
+$ ansible-playbook \
+         -i hosts \
+         apimgmt_db_vm.yml \
+         --skip-tags=rhel
+-----
+
+== db_tools
+
+-----
+$ ansible-playbook \
+         -i hosts \
+         db_test.yml \
+         --skip-tags=rhel
+-----
 
 . Smoke test the `backend-redis` database:
 +
