@@ -5,8 +5,8 @@
 # Test
 #   /opt/rh/rh-redis32/root/bin/redis-cli PING
 
-#- name: Install Redis from RHT Software Collections
-#  yum: name=rh-redis32 state=present
+- name: Install Redis from RHT Software Collections
+  yum: name=rh-redis32 state=present
 
 - name: Ensure Redis starts on all NICs
   replace:
@@ -17,12 +17,13 @@
 
 # Appears there is not a mechanism to specify a password to the Redis database from the 3scale AMP pods that make use of redis
 # https://access.redhat.com/support/cases/#/case/01997657
-#- name: Set a password for Redis
-#  replace:
-#    path: "/etc/opt/rh/{{REDIS_VERSION}}/redis.conf"
-#    regexp: '^# requirepass foobared'
-#    replace: 'requirepass {{REDIS_PASSWORD}}'
-#    owner: redis
+- name: Set a password for Redis
+  replace:
+    path: "/etc/opt/rh/{{REDIS_VERSION}}/redis.conf"
+    regexp: '^# requirepass foobared'
+    replace: 'requirepass {{REDIS_PASSWORD}}'
+    owner: redis
+  when: SET_REDIS_PASSWORD
 
 - name: Disable protected-mode on Redis
   replace:

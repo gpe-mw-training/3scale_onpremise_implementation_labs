@@ -275,9 +275,9 @@ objects:
           - backend-cron
           env:
           - name: CONFIG_REDIS_PROXY
-            value: "backend-redis:6379"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379"
           - name: CONFIG_QUEUES_MASTER_NAME
-            value: "backend-redis:6379/1"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379/1"
           - name: RACK_ENV
             value: "production"
           image: amp-backend:latest
@@ -396,9 +396,9 @@ objects:
           - "/dev/stdout"
           env:
           - name: CONFIG_REDIS_PROXY
-            value: "backend-redis:6379"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379"
           - name: CONFIG_QUEUES_MASTER_NAME
-            value: "backend-redis:6379/1"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379/1"
           - name: RACK_ENV
             value: "production"
           - name: CONFIG_INTERNAL_API_USER
@@ -457,7 +457,7 @@ objects:
   metadata:
     name: backend-listener
     annotations:
-      service.alpha.openshift.io/dependencies: '[{"name": "backend-redis", "kind": "Service"}]'
+      service.alpha.openshift.io/dependencies: '[{"name": "${BACKEND_REDIS_SERVICE_NAME}", "kind": "Service"}]'
   spec:
     ports:
     - port: 3000
@@ -523,9 +523,9 @@ objects:
           - run
           env:
           - name: CONFIG_REDIS_PROXY
-            value: "backend-redis:6379"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379"
           - name: CONFIG_QUEUES_MASTER_NAME
-            value: "backend-redis:6379/1"
+            value: "${BACKEND_REDIS_SERVICE_NAME}:6379/1"
           - name: RACK_ENV
             value: "production"
           - name: CONFIG_EVENTS_HOOK
@@ -1957,3 +1957,8 @@ parameters:
   description: "Enable logging response codes in APIcast."
   value: "true"
   required: false
+# JA Bride
+- name: BACKEND_REDIS_SERVICE_NAME
+  description: "Name of Backend Redis Service"
+  value: "backend-redis"
+  required: true

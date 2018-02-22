@@ -21,3 +21,7 @@ PSQL_USER_PASSWORD: uweriwerk38IEuwUG872cw
 REDIS_VERSION: rh-redis32
 REDIS_INSTALL_DIR: /opt/rh/{{REDIS_VERSION}}
 REDIS_PASSWORD: 2uriwer_qcl41tiedcn54l81lwrnc023wedfslq3vnmcs430
+
+# Appears there is not a mechanism to specify a password to the Redis database from the 3scale AMP pods that make use of redis
+# https://access.redhat.com/support/cases/#/case/01997657
+SET_REDIS_PASSWORD: true

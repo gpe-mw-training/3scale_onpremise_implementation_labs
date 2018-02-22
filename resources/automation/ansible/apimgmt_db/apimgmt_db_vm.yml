@@ -10,7 +10,7 @@
 #    - yum-clean
 
 #    - mariadb
-    - postgresql
-#    - redis
+#    - postgresql
+    - redis
 
 #    - rhn_unsubscribe

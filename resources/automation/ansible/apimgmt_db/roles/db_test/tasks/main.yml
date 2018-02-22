@@ -11,8 +11,8 @@
 
 - name: Test connection to backend-redis database 
   shell: |
-       redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $REDIS_PORT PING
+       redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
 
 - name: Test connection to system-redis database 
   shell: |
-       redis-cli -h $REDIS_HOST -a $REDIS_PASSWORD -p $REDIS_PORT PING
+       redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
