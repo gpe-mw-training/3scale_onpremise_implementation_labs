@@ -1,6 +1,6 @@
 ---
 
-- name: Install MariaDb and MySQL-python (so as to be able to use  "mysql_user" ansible module)
+- name: Install MariaDb and MySQL-python (so as to be able to use  "mysql_user" ansible module) on {{apimgmt_db_vm}}
   yum: name=mariadb-server state=present
 - yum: name=MySQL-python state=present
 

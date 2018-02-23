@@ -1,6 +1,5 @@
-os_user: jboss
 db_user: jboss
-apimgmt_db_vm: 192.168.122.167
+apimgmt_db_vm: "{{ansible_eth0.ipv4.address}}"
 
 install_script_dir: /opt/install/scripts
 

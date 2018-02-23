@@ -52,7 +52,6 @@ This ansible project assumes that you have already provisioned a virtual machine
 $ ansible-playbook \
          -i hosts \
          apimgmt_db_vm.yml \
-         --skip-tags=rhel
 -----
 
 == db_tools
@@ -61,7 +60,6 @@ $ ansible-playbook \
 $ ansible-playbook \
          -i hosts \
          db_test.yml \
-         --skip-tags=rhel
 -----
 
 . Smoke test the `backend-redis` database:

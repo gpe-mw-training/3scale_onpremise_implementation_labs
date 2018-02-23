@@ -3,8 +3,11 @@
 # Optional: Only specify if using RHEL7 and machine has been registered via subscription-manager
 - name: Enable Extras (which contains docker), supplementary and Optional channels
   shell: "subscription-manager repos --enable={{extras_channel}} --enable={{supplementary_channel}} --enable={{optional_channel}} --enable={{rhscl_channel}}"
-  tags:
-    - rhel
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install Centos Tools
+  yum: name=centos-release-scl state=present
+  when: ansible_distribution == 'CentOS'
 
 - name: Install tools
   yum: name=git,zip,bzip2,unzip,gettext,wget,curl,telnet,tree,bind-utils state=present

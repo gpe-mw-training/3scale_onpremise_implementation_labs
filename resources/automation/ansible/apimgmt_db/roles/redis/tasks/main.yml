@@ -1,6 +1,7 @@
 ---
 
 # https://www.softwarecollections.org/en/scls/rhscl/rh-redis32/
+# centos:  sudo yum install centos-release-scl
 #
 # Test
 #   /opt/rh/rh-redis32/root/bin/redis-cli PING
