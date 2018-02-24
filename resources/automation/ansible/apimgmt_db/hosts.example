@@ -1,6 +1,6 @@
 [ocp_vm]
-<ip address of OCP virtual machine>
+ocpvm ansible_host=35.229.21.131  ansible_ssh_user=jbride
 
-[apimgmt_db_vm]
-<ip address of database virtual machine>
+[db_vm]
+dbvm ansible_host=35.231.7.222  ansible_ssh_user=jbride
 
