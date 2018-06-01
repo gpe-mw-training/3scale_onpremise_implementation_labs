@@ -1,6 +1,7 @@
 ---
 
 # https://developers.redhat.com/blog/2016/07/28/postgresql-and-mongodb-software-collections-three-easy-steps-to-get-started/
+# centos:   sudo yum install centos-release-scl
 
 - name: Install PostgreSQL (v9.5 from RHT Software Collections) and pythonpsycopg2 (so as to be able to use  "python-psycopg2" ansible module)
   yum: name=rh-postgresql95-postgresql-server,rh-postgresql95-postgresql-contrib,python-psycopg2 state=present

@@ -1,11 +1,14 @@
-- hosts: apimgmt_db_vm
-  remote_user: root
+- hosts: db_vm
+  become: true
+  become_user: root
+  tasks:
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
   roles:
     - update
     - tools
     - selinux
     - reboot
-    - useradd
     - firewalld
     - yum-clean
 

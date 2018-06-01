@@ -1,24 +1,24 @@
 ---
 
-- name: Test connection to mysql at {{apimgmt_db_vm}}
+- name: Test connection to mysql at {{ apimgmt_db_vm }}
   shell: |
        mysql -h {{apimgmt_db_vm}} -u root -p{{MYSQL_ROOT_PASSWORD}} system_{{db_user}} --execute="select 1"
 
-- name: Test connection to postgresql
+- name: Test connection to postgresql at {{ apimgmt_db_vm }}
   shell: |
        export PGPASSWORD={{PSQL_USER_PASSWORD}} && \
        psql -h {{apimgmt_db_vm}} -U {{db_user}} zync_production_{{db_user}} -c 'select 1'
 
-- name: Test connection to backend-redis database 
+- name: Test connection to backend-redis database at {{ apimgmt_db_vm }}
   shell: |
        redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
 
-- name: Test connection to system-redis database using a password
+- name: Test connection to system-redis database using a password at {{ apimgmt_db_vm }}
   shell: |
        redis-cli -h {{apimgmt_db_vm}} -a {{ REDIS_PASSWORD }} PING
   when: SET_REDIS_PASSWORD == true
 
-- name: Test connection to system-redis database without using a password
+- name: Test connection to system-redis database without using a password at {{ apimgmt_db_vm }}
   shell: |
        redis-cli -h {{apimgmt_db_vm}} PING
   when: SET_REDIS_PASSWORD == false
