@@ -329,7 +329,8 @@ objects:
           resources:
             limits:
               cpu: 2000m
-              memory: 32Gi
+              # JA Bride:  changed because limit defined in limitrange is 6Gi
+              memory: 5Gi
             requests:
               cpu: 1000m
               memory: 1024Mi
@@ -652,7 +653,8 @@ objects:
             -  "no"
           resources:
             limits:
-              memory: 32Gi
+              # JA Bride:  changed because limit defined in limitrange is 6Gi
+              memory: 5Gi
               cpu: 500m
             requests:
               cpu: 150m
