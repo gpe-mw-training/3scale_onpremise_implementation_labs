@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <version.wildfly-swarm>2017.3.3</version.wildfly-swarm>
+    <version.wildfly-swarm>2018.5.0</version.wildfly-swarm> 
 
     <maven.min.version>3.2.1</maven.min.version>
 
@@ -77,7 +77,7 @@
     <repository>
       <id>jboss-public-repository-group</id>
       <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
