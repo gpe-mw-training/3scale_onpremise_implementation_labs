@@ -328,12 +328,13 @@ objects:
             -  "no"
           resources:
             limits:
-              cpu: 2000m
-              # JA Bride:  changed because limit defined in limitrange is 6Gi
-              memory: 5Gi
-            requests:
+              # JA Bride:  dropped down to 2Gi RAM and 1 CPU  because our course deployments are not intended to be production
               cpu: 1000m
-              memory: 1024Mi
+              memory: 2Gi
+            requests:
+              # JA Bride:  dropped down to .5Gi RAM and .5 CPU  because our course deployments are not intended to be production
+              cpu: 500m
+              memory: 512Mi
           readinessProbe:
             exec:
               command:
@@ -580,7 +581,8 @@ objects:
           name: backend-worker
           resources:
             limits:
-              cpu: 1000m
+              # JA Bride:  dropped to 500m
+              cpu: 500m
               memory: 300Mi
             requests:
               cpu: 150m
@@ -759,8 +761,9 @@ objects:
           imagePullPolicy: IfNotPresent
           name: system-sphinx
           resources:
+            # JA Bride:  Dropping for non-production deployment
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 512Mi
             requests:
               cpu: 80m
@@ -1067,11 +1070,12 @@ objects:
           imagePullPolicy: IfNotPresent
           name: apicast-production
           resources:
+            # JA Bride:  Dropping for non-production deployment
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 128Mi
             requests:
-              cpu: 500m
+              cpu: 256m
               memory: 64Mi
           livenessProbe:
             httpGet:
@@ -1350,12 +1354,13 @@ objects:
           args: [ 'env', 'TENANT_MODE=master', 'PORT=3002', 'container-entrypoint', 'bundle', 'exec', 'unicorn', '-c', 'config/unicorn.rb' ]
           name: system-master
           resources:
+            # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 800Mi
             requests:
               cpu: 50m
-              memory: 600Mi
+              memory: 300Mi
           livenessProbe:
             timeoutSeconds: 10
             initialDelaySeconds: 20
@@ -1388,12 +1393,13 @@ objects:
           args: [ 'env', 'TENANT_MODE=provider', 'PORT=3000', 'container-entrypoint', 'bundle', 'exec', 'unicorn', '-c', 'config/unicorn.rb' ]
           name: system-provider
           resources:
+            # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 800Mi
             requests:
               cpu: 50m
-              memory: 600Mi
+              memory: 300Mi
           livenessProbe:
             timeoutSeconds: 10
             initialDelaySeconds: 20
@@ -1426,12 +1432,13 @@ objects:
           imagePullPolicy: IfNotPresent
           name: system-developer
           resources:
+            # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 800Mi
             requests:
               cpu: 50m
-              memory: 600Mi
+              memory: 300Mi
           livenessProbe:
             timeoutSeconds: 10
             initialDelaySeconds: 20
@@ -1591,12 +1598,13 @@ objects:
           imagePullPolicy: IfNotPresent
           name: system-sidekiq
           resources:
+            # JA Bride:  Dropping for non-production deployment
             limits:
-              cpu: 1000m
-              memory: 2Gi
+              cpu: 500m
+              memory: 1Gi
             requests:
               cpu: 100m
-              memory: 500Mi
+              memory: 256Mi
           volumeMounts:
           - name: system-storage
             mountPath: /opt/system/public/system
@@ -1657,11 +1665,13 @@ objects:
               - containerPort: 3306
                 protocol: TCP
             resources:
+            # JA Bride:  reducing resources limits and requests for non-prod deployments
               limits:
-                memory: 2Gi
+                cpu: 1000m
+                memory: 1Gi
               requests:
                 cpu: 250m
-                memory: 512Mi
+                memory: 256Mi
             readinessProbe:
               timeoutSeconds: 5
               initialDelaySeconds: 10
@@ -1846,8 +1856,9 @@ objects:
           - containerPort: 8080
             protocol: TCP
           resources:
+            # JA Bride:  Dropping for non-production deployment
             limits:
-              cpu: '1'
+              cpu: 500m
               memory: 512Mi
             requests:
               cpu: 150m
@@ -1995,7 +2006,8 @@ objects:
             value: "zync_production"
           resources:
             limits:
-              memory: "2G"
+              # JA Bride:  Bumping down to 1G
+              memory: "1G"
               cpu: 250m
             requests:
               cpu: 50m
