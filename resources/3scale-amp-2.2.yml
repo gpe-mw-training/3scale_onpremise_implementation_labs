@@ -328,9 +328,9 @@ objects:
             -  "no"
           resources:
             limits:
-              # JA Bride:  dropped down to 2Gi RAM and 1 CPU  because our course deployments are not intended to be production
+              # JA Bride:  dropped down to 1Gi RAM and 1 CPU  because our course deployments are not intended to be production
               cpu: 1000m
-              memory: 2Gi
+              memory: 1Gi
             requests:
               # JA Bride:  dropped down to .5Gi RAM and .5 CPU  because our course deployments are not intended to be production
               cpu: 500m
@@ -656,7 +656,7 @@ objects:
           resources:
             limits:
               # JA Bride:  changed because limit defined in limitrange is 6Gi
-              memory: 5Gi
+              memory: 2Gi
               cpu: 500m
             requests:
               cpu: 150m
