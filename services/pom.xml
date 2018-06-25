@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <version.wildfly-swarm>2017.3.3</version.wildfly-swarm>
-    <version.fabric8>3.2.28</version.fabric8>
+    <version.wildfly-swarm>2018.5.0</version.wildfly-swarm>
+    <version.fabric8>3.5.28</version.fabric8>
 
     <maven.min.version>3.2.1</maven.min.version>
 
@@ -29,24 +29,20 @@
   <build>
     <pluginManagement>
       <plugins>
+
         <plugin>
           <groupId>org.wildfly.swarm</groupId>
           <artifactId>wildfly-swarm-plugin</artifactId>
           <version>${version.wildfly-swarm}</version>
-          <configuration>
-            <jvmArguments>
-              <jvmArgument>-Xmx128m</jvmArgument>
-            </jvmArguments>
-          </configuration>
-          <executions>
-            <execution>
-              <id>package</id>
-              <goals>
-                <goal>package</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
+
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>fabric8-maven-plugin</artifactId>
+          <version>${version.fabric8}</version>
+        </plugin>
+
+
       </plugins>
     </pluginManagement>
   </build>
@@ -63,22 +59,25 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public-jboss</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
       <releases>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
-    </repository>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
     <repository>
-      <id>jboss-public-repository-group</id>
+      <id>public-jboss</id>
       <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
