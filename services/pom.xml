@@ -62,22 +62,12 @@
     </dependencies>
   </dependencyManagement>
 
+
   <repositories>
     <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>jboss-public-repository-group</id>
+      <id>public-jboss</id>
       <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
