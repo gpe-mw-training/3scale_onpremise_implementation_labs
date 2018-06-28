@@ -329,7 +329,7 @@ objects:
           resources:
             limits:
               # JA Bride:  dropped down to 1Gi RAM and 1 CPU  because our course deployments are not intended to be production
-              cpu: 1000m
+              cpu: 750m
               memory: 1Gi
             requests:
               # JA Bride:  dropped down to .5Gi RAM and .5 CPU  because our course deployments are not intended to be production
@@ -428,7 +428,7 @@ objects:
           name: backend-listener
           resources:
             limits:
-              cpu: 1000m
+              cpu: 750m
               memory: 700Mi
             requests:
               cpu: 500m
@@ -1189,7 +1189,7 @@ objects:
             name: apicast-wildcard-router
             resources:
               limits:
-                cpu: 500m
+                cpu: 250m
                 memory: 64Mi
               requests:
                 cpu: 120m
@@ -1667,7 +1667,7 @@ objects:
             resources:
             # JA Bride:  reducing resources limits and requests for non-prod deployments
               limits:
-                cpu: 1000m
+                cpu: 750m
                 memory: 1Gi
               requests:
                 cpu: 250m
