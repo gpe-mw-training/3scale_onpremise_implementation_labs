@@ -1356,7 +1356,7 @@ objects:
           resources:
             # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 500m
+              cpu: 1000m
               memory: 800Mi
             requests:
               cpu: 50m
@@ -1395,7 +1395,7 @@ objects:
           resources:
             # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 500m
+              cpu: 1000m
               memory: 800Mi
             requests:
               cpu: 50m
@@ -1434,7 +1434,7 @@ objects:
           resources:
             # JA Bride:  reducing resources limits and requests for non-prod deployments
             limits:
-              cpu: 500m
+              cpu: 1000m
               memory: 800Mi
             requests:
               cpu: 50m
