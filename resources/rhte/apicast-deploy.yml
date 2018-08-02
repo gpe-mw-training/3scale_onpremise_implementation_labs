@@ -22,8 +22,14 @@ spec:
     spec:
       containers:
       - env:
+
+        # examples:
+        #  curl -k https://${ADMIN_ACCESS_TOKEN}@${ADMIN_DOMAIN}/admin/api/services.json
+        #  curl -k https://6k5js65s@jb-master-admin.apps.dev39.openshift.opentlc.com/master/api/proxy/configs/production.json
+        #  curl -k https://e98bd100361d81ee0d375b5fc629f5ba90355fe6769b5e29663650ebfb841a5e@user1-3scale-admin.apps.dev39.openshift.opentlc.com/admin/api/services.json
         - name: THREESCALE_PORTAL_ENDPOINT
-          value: "http://${APICAST_ACCESS_TOKEN}@system-master:3000/master/api/proxy/configs"
+          value: "${THREESCALE_PORTAL_ENDPOINT}"
+
         - name: APICAST_CONFIGURATION_LOADER
           value: "boot"
         - name: APICAST_CONFIGURATION_CACHE
@@ -40,6 +46,8 @@ spec:
           value: '${APICAST_RESPONSE_CODES}'
         - name: REDIS_URL
           value: "redis://system-redis:6379/1"
+        - name: APICAST_LOG_LEVEL
+          value: debug
         image: registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8
         imagePullPolicy: IfNotPresent
         name: apicast-production
