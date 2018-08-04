@@ -45,7 +45,7 @@ objects:
       protocol: TCP
       targetPort: 8090
     selector:
-      deploymentconfig: apicast-prod-plain
+      deployment: apicast-prod-plain
 
 - apiVersion: v1
   kind: Route
