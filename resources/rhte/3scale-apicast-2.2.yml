@@ -45,7 +45,7 @@ objects:
       protocol: TCP
       targetPort: 8090
     selector:
-      deploymentconfig: apicast-prod-solo
+      deployment: apicast-prod-plain
 
 - apiVersion: v1
   kind: Route
@@ -66,7 +66,7 @@ objects:
 - apiVersion: extensions/v1beta1 
   kind: Deployment
   metadata:
-    name: apicast-prod-solo
+    name: apicast-prod-plain
     labels:
       app: APIcast
   spec:
@@ -115,7 +115,7 @@ objects:
             value: debug
           image: registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8
           imagePullPolicy: IfNotPresent
-          name: apicast-prod-solo
+          name: apicast-prod-plain
           resources:
             # JA Bride:  Dropping for non-production deployment
             limits:
@@ -149,7 +149,7 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - apicast-prod-solo
+        - apicast-prod-plain
         from:
           kind: ImageStreamTag
           name: amp-apicast:latest
