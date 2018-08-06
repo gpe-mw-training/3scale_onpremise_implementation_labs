@@ -47,7 +47,7 @@ objects:
       protocol: TCP
       targetPort: 8090
     selector:
-      deploymentconfig: ${APP_NAME}
+      deployment: ${APP_NAME}
 
 - apiVersion: v1
   kind: Route
@@ -117,7 +117,7 @@ objects:
             value: debug
           image: registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8
           imagePullPolicy: IfNotPresent
-          name: apicast-prod-solo
+          name: apicast-prod-plain
           resources:
             # JA Bride:  Dropping for non-production deployment
             limits:
