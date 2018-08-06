@@ -29,6 +29,13 @@ parameters:
 - name: WILDCARD_DOMAIN
   description: Root domain for the wildcard routes. Eg. example.com will generate 3scale-admin.example.com.
   required: true
+- name: THREESCALE_AMP_NAMESPACE
+  description: "Name of the OCP namespace where 3scale AMP is installed"
+  required: true
+  value: "3scale-mt-adm0"
+- name: THREESCALE_DEPLOYMENT_ENV
+  description: "valid values: staging / production"
+  required: true
 
 objects:
 
@@ -106,17 +113,17 @@ objects:
           - name: APICAST_CONFIGURATION_CACHE
             value: "300"
           - name: THREESCALE_DEPLOYMENT_ENV
-            value: "production"
+            value: "${THREESCALE_DEPLOYMENT_ENV}"
           - name: APICAST_MANAGEMENT_API
             value: "${APICAST_MANAGEMENT_API}"
           - name: BACKEND_ENDPOINT_OVERRIDE
-            value: http://backend-listener:3000
+            value: http://backend-listener.${THREESCALE_AMP_NAMESPACE}:3000
           - name: OPENSSL_VERIFY
             value: '${APICAST_OPENSSL_VERIFY}'
           - name: APICAST_RESPONSE_CODES
             value: '${APICAST_RESPONSE_CODES}'
           - name: REDIS_URL
-            value: "redis://system-redis:6379/1"
+            value: "redis://system-redis.${THREESCALE_AMP_NAMESPACE}:6379/1"
           - name: APICAST_LOG_LEVEL
             value: debug
           image: registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8
