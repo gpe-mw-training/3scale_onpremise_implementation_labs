@@ -36,6 +36,8 @@ objects:
   kind: Service
   metadata:
     name: ${APP_NAME}
+    labels:
+      app: ${APP_NAME}
   spec:
     ports:
     - name: gateway
@@ -47,12 +49,14 @@ objects:
       protocol: TCP
       targetPort: 8090
     selector:
-      deployment: ${APP_NAME}
+      app: ${APP_NAME}
 
 - apiVersion: v1
   kind: Route
   metadata:
     name: ${ROUTE_NAME}
+    labels:
+      app: ${APP_NAME}
   spec:
     host: ${ROUTE_NAME}.${WILDCARD_DOMAIN}
     to:
@@ -85,7 +89,7 @@ objects:
     template:
       metadata:
         labels:
-          deployment: ${APP_NAME}
+          app: ${APP_NAME}
       spec:
         containers:
         - env:
@@ -117,7 +121,7 @@ objects:
             value: debug
           image: registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8
           imagePullPolicy: IfNotPresent
-          name: apicast-prod-plain
+          name: ${APP_NAME}
           resources:
             # JA Bride:  Dropping for non-production deployment
             limits:
@@ -145,13 +149,3 @@ objects:
             protocol: TCP
           - containerPort: 8090
             protocol: TCP
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${APP_NAME}
-        from:
-          kind: ImageStreamTag
-          name: amp-apicast:latest
