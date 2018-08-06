@@ -116,8 +116,11 @@ objects:
             value: "${THREESCALE_DEPLOYMENT_ENV}"
           - name: APICAST_MANAGEMENT_API
             value: "${APICAST_MANAGEMENT_API}"
+
+          # URL where apicast will post authrep 
           - name: BACKEND_ENDPOINT_OVERRIDE
             value: http://backend-listener.${THREESCALE_AMP_NAMESPACE}:3000
+
           - name: OPENSSL_VERIFY
             value: '${APICAST_OPENSSL_VERIFY}'
           - name: APICAST_RESPONSE_CODES
