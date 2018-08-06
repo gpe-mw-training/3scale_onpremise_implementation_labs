@@ -20,10 +20,12 @@ parameters:
   description: "Enable logging response codes in APIcast."
   value: "true"
   required: false
-- name: TENANT_NAME
-  description: "Tenant name under the root that Admin UI will be available with -admin suffix."
+- name: APP_NAME
+  description: "Name of OCP resources"
   required: true
-  value: "3scale"
+- name: ROUTE_NAME
+  description: "Name of the OCP route that exposes this apicast service"
+  required: true
 - name: WILDCARD_DOMAIN
   description: Root domain for the wildcard routes. Eg. example.com will generate 3scale-admin.example.com.
   required: true
@@ -33,7 +35,7 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: apicast-production
+    name: ${APP_NAME}
   spec:
     ports:
     - name: gateway
@@ -45,17 +47,17 @@ objects:
       protocol: TCP
       targetPort: 8090
     selector:
-      deploymentconfig: apicast-prod-solo
+      deploymentconfig: ${APP_NAME}
 
 - apiVersion: v1
   kind: Route
   metadata:
-    name: api-apicast-production-route
+    name: ${ROUTE_NAME}
   spec:
-    host: api-${TENANT_NAME}-apicast-production.${WILDCARD_DOMAIN}
+    host: ${ROUTE_NAME}.${WILDCARD_DOMAIN}
     to:
       kind: Service
-      name: apicast-production
+      name: ${APP_NAME}
     port:
       targetPort: gateway
     tls:
@@ -66,9 +68,9 @@ objects:
 - apiVersion: extensions/v1beta1 
   kind: Deployment
   metadata:
-    name: apicast-prod-solo
+    name: ${APP_NAME}
     labels:
-      app: APIcast
+      app: ${APP_NAME}
   spec:
     paused: true
     replicas: 1
@@ -83,7 +85,7 @@ objects:
     template:
       metadata:
         labels:
-          deployment: apicast-prod-istio
+          deployment: ${APP_NAME}
       spec:
         containers:
         - env:
@@ -149,7 +151,7 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - apicast-prod-solo
+        - ${APP_NAME}
         from:
           kind: ImageStreamTag
           name: amp-apicast:latest
