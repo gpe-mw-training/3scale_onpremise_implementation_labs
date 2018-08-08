@@ -16,6 +16,10 @@ parameters:
   description: "Turn on/off the OpenSSL peer verification when downloading the configuration. Can be set to true/false."
   required: false
   value: "false"
+- name: APICAST_CONFIGURATION_LOADER
+  description: "valid values:  lazy / boot"
+  required: true
+  value: "boot"
 - name: APICAST_RESPONSE_CODES
   description: "Enable logging response codes in APIcast."
   value: "true"
@@ -109,7 +113,7 @@ objects:
             value: "${THREESCALE_PORTAL_ENDPOINT}"
   
           - name: APICAST_CONFIGURATION_LOADER
-            value: "boot"
+            value: "${APICAST_CONFIGURATION_LOADER}"
           - name: APICAST_CONFIGURATION_CACHE
             value: "300"
           - name: THREESCALE_DEPLOYMENT_ENV
