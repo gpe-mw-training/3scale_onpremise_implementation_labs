@@ -89,9 +89,11 @@ objects:
         - env:
   
           # examples:
-          #  curl -k https://${ADMIN_ACCESS_TOKEN}@${ADMIN_DOMAIN}/admin/api/services.json
-          #  curl -k https://6k5js65s@jb-master-admin.apps.dev39.openshift.opentlc.com/master/api/proxy/configs/production.json
-          #  curl -k https://e98bd100361d81ee0d375b5fc629f5ba90355fe6769b5e29663650ebfb841a5e@user1-3scale-admin.apps.dev39.openshift.opentlc.com/admin/api/services.json
+          #  curl -k https://${ADMIN_ACCESS_TOKEN}@${ADMIN_DOMAIN}/admin/api/services.json                                              :   domain specific services
+          #  curl -k https://${ADMIN_ACCESS_TOKEN}@${ADMIN_DOMAIN}/admin/api/nginx/spec.json                                            :   domain specific services
+
+          #  curl -k https://6k5js65s@jb-master-admin.apps.dev39.openshift.opentlc.com/master/api/proxy/configs/production.json         :   master  (out of the box apicast) : route
+          #  curl -k http://151jtbt2@system-master.3scale-mt-adm0:3000/master/api/proxy/configs/production.json                         :   master  (out of the box apicast) : service
           - name: THREESCALE_PORTAL_ENDPOINT
             value: "${THREESCALE_PORTAL_ENDPOINT}"
   
