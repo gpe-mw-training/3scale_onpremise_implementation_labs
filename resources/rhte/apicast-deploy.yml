@@ -78,13 +78,3 @@ spec:
           protocol: TCP
         - containerPort: 8090
           protocol: TCP
-  triggers:
-  - type: ConfigChange
-  - type: ImageChange
-    imageChangeParams:
-      automatic: true
-      containerNames:
-      - apicast-production
-      from:
-        kind: ImageStreamTag
-        name: amp-apicast:latest
