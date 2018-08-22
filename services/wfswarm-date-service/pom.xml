@@ -3,18 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.redhat.gpte.3scale</groupId>
-    <artifactId>examples-parent</artifactId>
-    <version>1.0</version>
-    <relativePath>../</relativePath>
-  </parent>
-
-  <artifactId>wf-swarm-oauth</artifactId>
-
-  <name>WildFly Swarm Examples: JAX-RS swagger</name>
-  <description>WildFly Swarm Examples: JAX-RS swagger</description>
-
+  <groupId>com.redhat.gpte.3scale</groupId>
+  <artifactId>examples-parent</artifactId>
+  <version>1.0</version>
   <packaging>war</packaging>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -36,16 +27,23 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>org.wildfly.swarm</groupId>
-      <artifactId>keycloak</artifactId>
-      <version>${version.wildfly-swarm.community}</version>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.7</version>
-    </dependency>
+     <dependency>
+       <groupId>org.wildfly.swarm</groupId>
+       <artifactId>keycloak</artifactId>
+       <version>${version.wildfly.swarm.community}</version>
+     </dependency>
+     <dependency>
+       <groupId>joda-time</groupId>
+       <artifactId>joda-time</artifactId>
+       <version>2.7</version>
+     </dependency>
+     <dependency>
+       <groupId>org.wildfly.swarm</groupId>
+       <artifactId>swagger</artifactId>
+       <version>${version.wildfly.swarm.community}</version>
+     </dependency>
+
+
     <dependency>
       <groupId>org.wildfly.swarm</groupId>
       <artifactId>jpa</artifactId>
@@ -77,11 +75,6 @@
       <artifactId>resteasy-client</artifactId>
       <version>3.0.24.Final-redhat-1</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.wildfly.swarm</groupId>
-      <artifactId>swagger</artifactId>
-      <version>${version.wildfly-swarm.community}</version>
     </dependency>
   </dependencies>
   <build>
