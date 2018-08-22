@@ -4,9 +4,9 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.redhat.gpte.3scale</groupId>
-  <artifactId>examples-parent</artifactId>
   <version>1.0</version>
   <packaging>war</packaging>
+  <artifactId>wf-swarm-oauth</artifactId>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
