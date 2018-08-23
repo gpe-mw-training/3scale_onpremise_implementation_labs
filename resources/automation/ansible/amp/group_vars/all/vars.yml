@@ -4,7 +4,7 @@ threescale_template: https://raw.githubusercontent.com/gpe-mw-training/3scale_on
 modified_template_path: /tmp/amp.yml
 
 threescale_project: "{{OCP_PROJECT_PREFIX}}-3scale-ansible"
-threescale_tenant_name: "{{OCP_PROJECT_PREFIX}}-3scale"
+threescale_tenant_name: "{{OCP_PROJECT_PREFIX}}-3scale-ansible"
 threescale_wildcard_domain: "{{ openshift_master_default_subdomain }}"
 threescale_delay: 10
 threescale_retries: 30
