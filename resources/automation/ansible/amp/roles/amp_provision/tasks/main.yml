@@ -8,33 +8,32 @@
 
 
 ################            AMP Project and Template            #####################
-- name: Download {{ threescale_template }}
-  get_url:
-    url: "{{ threescale_template }}"
-    dest: "{{modified_template_path}}"
-    force: yes
-  tags: setup
-
 - name: Get a list of existing projects
   command: oc get projects -o name
   register: oc_get_projects
   changed_when: false
   tags: project
 
-- name: Create a new project for 3scale
+- name: Create a new project for 3scale  {{ threescale_project }}
   command: oc new-project "{{ threescale_project }}"
-  when: '"project/" ~ threescale_project not in oc_get_projects.stdout_lines'
+  when: '"projects/" ~ threescale_project not in oc_get_projects.stdout_lines'
   tags: project
+
+- name: Download {{ threescale_template }}
+  get_url:
+    url: "{{ threescale_template }}"
+    dest: "{{modified_template_path}}"
+    force: yes
+  tags: template
 
 - name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
   shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
   register: oc
   failed_when: oc.rc > 0 and 'Error from server (AlreadyExists):' not in oc.stderr
   changed_when: oc.rc == 0
-  tags: setup
+  tags: template
 
 - include: status.yml
-  tags: status
 
 
 
@@ -51,7 +50,7 @@
     - system-redis
     - zync-database
   tags: amp_rollout
-
+  
 - include: wait_for.yml
   static: no
   vars:
@@ -63,13 +62,12 @@
       - zync-database
   tags: status
 
-- name: Resume backend-listener, backend-worker
+- name: "Resume {{with_items}}"
   command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - backend-listener
     - backend-worker
   tags: amp_rollout
-
 - include: wait_for.yml
   static: no
   vars:
@@ -91,7 +89,7 @@
 
 #########################           AMP System Tier        #####################################
 
-- name: system-provider and system-developer tier
+- name: "Resume {{with_items}}"
   command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - system-app
@@ -104,7 +102,7 @@
       - system-app
   tags: status
 
-- name: Resume system-resque system-sidekiq backend-cron and system-sphinx
+- name: "Resume {{with_items}}"
   command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - system-resque
@@ -135,7 +133,7 @@
 - command: oc patch dc/apicast-production --patch '{"spec":{"template":{"spec":{"containers":[{"name":"apicast-production", "env":[{"name":"APICAST_CONFIGURATION_LOADER","value":"lazy" }] }]}}}}'
   tags: setup
 
-- name: Resume apicast-staging, apicast-production
+- name: "Resume {{with_items}}"
   command: oc rollout resume dc/"{{ item }}" -n "{{ threescale_project }}"
   with_items:
     - apicast-staging
@@ -152,6 +150,10 @@
 
 
 #####################           Routes          #################################
+
+- include: status.yml
+  static: no
+
 - name: Delete generic apicast routes
   command: oc delete route "{{ item }}" -n "{{ threescale_project }}"
   with_items:
