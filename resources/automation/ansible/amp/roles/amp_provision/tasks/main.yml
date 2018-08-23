@@ -27,7 +27,7 @@
   tags: template
 
 - name: Process the OpenShift Template and create the OpenShift objects for the 3scale API Management Platform
-  shell: oc process -f "{{ modified_template_path }}" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
+  shell: oc process -f "{{ modified_template_path }}" -p "MASTER_NAME={{OCP_PROJECT_PREFIX}}-master" -p "TENANT_NAME={{ threescale_tenant_name }}" -p "WILDCARD_DOMAIN={{ threescale_wildcard_domain }}" -p "ADMIN_PASSWORD={{ amp_admin_passwd }}" -n "{{ threescale_project }}" | oc create -f - -n "{{ threescale_project }}"
   register: oc
   failed_when: oc.rc > 0 and 'Error from server (AlreadyExists):' not in oc.stderr
   changed_when: oc.rc == 0
