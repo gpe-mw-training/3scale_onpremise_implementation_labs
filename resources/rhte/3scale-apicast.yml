@@ -66,6 +66,10 @@ parameters:
 - name: THREESCALE_DEPLOYMENT_ENV
   description: "valid values: staging / production"
   required: true
+- name: APICAST_CPU_LIMIT
+  description: "APICAST CPU LIMIT"
+  value: "300m"
+  required: true
 
 objects:
 
@@ -157,11 +161,11 @@ objects:
           resources:
             # JA Bride:  Dropping for non-production deployment
             limits:
-              cpu: 500m
+              cpu: ${APICAST_CPU_LIMIT}
               memory: 128Mi
             requests:
-              cpu: 256m
-              memory: 64Mi
+              cpu: 100m
+              memory: 32Mi
           livenessProbe:
             httpGet:
               path: /status/live
