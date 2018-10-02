@@ -1,6 +1,10 @@
 # Build:
+#   mvn clean package -DskipTests
 #   docker build --rm -t wf-swarm-oauth:1.0 .
 #   docker tag wf-swarm-oauth:1.0 docker.io/rhtgptetraining/wf-swarm-oauth:1.0
+
+# Execute
+#   docker run -t -i -p 9180:8080 wf-swarm-oauth:1.0
 
 # Docker push (on F28):
 #   Make sure the following is the *first* entry in the docker daemon (by updating /etc/sysconfig/docker):  --add-registry docker.io
@@ -10,7 +14,7 @@
 
 
 
-FROM fabric8/java-jboss-openjdk8-jdk:1.3.1
+FROM redhat-openjdk-18/openjdk18-openshift:1.5-14
 ENV JAVA_APP_DIR=/deployments
 EXPOSE 8080 8778 9779
 COPY target/wf-swarm-oauth-1.0-swarm.jar /deployments/

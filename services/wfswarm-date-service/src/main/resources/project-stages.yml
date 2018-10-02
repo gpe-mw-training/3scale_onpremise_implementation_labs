@@ -1,0 +1,9 @@
+swarm:
+  logging:
+    loggers:
+      org.wildfly.swarm.keycloak:
+        level: DEBUG
+      org.wildfly.swarm.config.keycloak:
+        level: DEBUG
+      org.keycloak:
+        level: DEBUG
