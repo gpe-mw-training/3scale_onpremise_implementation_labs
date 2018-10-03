@@ -65,7 +65,7 @@ objects:
             value: "80"
           - name: JAVA_OPTIONS
             value: "-Djavax.net.ssl.trustStore=${TRUSTSTORE_PATH} -Djavax.net.ssl.trustStorePassword=${TRUSTSTORE_PASSWORD} -Djavax.net.debug=ssl -Dswarm.keycloak.json.path=${KEYCLOAK_ADAPTER_PATH}"
-          image: docker.io/rhtgptetraining/wf-swarm-oauth:1.0.1
+          image: docker.io/rhtgptetraining/wf-swarm-oauth:1.0.2
           imagePullPolicy: IfNotPresent
           name: wf-swarm-oauth
           ports:
