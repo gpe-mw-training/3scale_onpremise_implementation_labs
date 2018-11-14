@@ -64,7 +64,7 @@ objects:
           - name: JAVA_MAX_MEM_RATIO
             value: "80"
           - name: JAVA_OPTIONS
-            value: "-Djavax.net.ssl.trustStore=${TRUSTSTORE_PATH} -Djavax.net.ssl.trustStorePassword=${TRUSTSTORE_PASSWORD} -Djavax.net.debug=ssl -Dswarm.keycloak.json.path=${KEYCLOAK_ADAPTER_PATH}"
+            value: "${JAVA_OPTIONS}"
           image: docker.io/rhtgptetraining/wf-swarm-oauth:1.0.2
           imagePullPolicy: IfNotPresent
           name: wf-swarm-oauth
@@ -90,17 +90,13 @@ objects:
     - type: ConfigChange
 
 parameters:
-- descripion: trustore password
-  displayName: TRUSTSTORE_PASSWORD
-  name: TRUSTSTORE_PASSWORD
+
+# If RH-SSO is configured with a cert signed by a legitimate CA (ie:  LetsEncrypt), then a sample value for this param might be :
+#    -Djavax.net.debug=ssl -Dswarm.keycloak.json.path=/app/rhsso-config/keycloak.json
+#
+# If RH-SSO uses a self-signed cert, then a sample value for this param might be:
+#    "-Djavax.net.ssl.trustStore=/tmp/realm1_truststore.jks -Djavax.net.ssl.trustStorePassword=changeme -Djavax.net.debug=ssl -Dswarm.keycloak.json.path=/app/rhsso-config/keycloak.json"
+- description: JAVA OPTIONS 
+  displayName: JAVA_OPTIONS
+  name: JAVA_OPTIONS
   required: true
-- descripion: trustore absolute path
-  displayName: TRUSTSTORE_PATH
-  name: TRUSTSTORE_PATH
-  required: true
-  value: "/app/certs/truststore.jks"
-- description: keycloak resource adapter path
-  displayName: KEYCLOAK_ADAPTER_PATH
-  name: KEYCLOAK_ADAPTER_PATH
-  required: true
-  value: "/app/rhsso-config/keycloak.json"
