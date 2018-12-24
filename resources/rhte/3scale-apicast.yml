@@ -12,7 +12,8 @@ parameters:
 - name: APICAST_IMAGE_URL
   description: "URL of APIcast image"
   required: true
-  value: "registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8"
+  value: "registry.access.redhat.com/3scale-amp24/apicast-gateway:1.13"
+  
 
 # examples:
 #  curl -k https://${ADMIN_ACCESS_TOKEN}@${ADMIN_DOMAIN}/admin/api/services.json                                              :   domain specific services
