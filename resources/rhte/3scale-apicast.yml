@@ -28,11 +28,6 @@ parameters:
   description: 3scale URL used by apicast to poll for proxy configs
   required: true
 
-- name: REDIS_URL
-  description: REDIS URL
-  required: true
-  value: "redis://system-redis.${THREESCALE_AMP_NAMESPACE}:6379/1"
-
 - name: BACKEND_ENDPOINT_OVERRIDE
   description: URL where apicast will post authrep 
   required: true
@@ -151,8 +146,6 @@ objects:
             value: '${APICAST_OPENSSL_VERIFY}'
           - name: APICAST_RESPONSE_CODES
             value: '${APICAST_RESPONSE_CODES}'
-          - name: REDIS_URL
-            value: '${REDIS_URL}'
           - name: APICAST_LOG_LEVEL
             value: info
           image: ${APICAST_IMAGE_URL}
