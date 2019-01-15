@@ -34,10 +34,12 @@ parameters:
   required: true
   value: "http://backend-listener.${THREESCALE_AMP_NAMESPACE}:3000"
 
+# SAMPLE CURL when value set to debug:  oc rsh stage-apicast-676bfb47db-g2f7h curl localhost:8090/config | python -m json.tool
 - name: APICAST_MANAGEMENT_API
   description: "Scope of the APIcast Management API. Can be disabled, status or debug. At least status required for health checks."
   required: false
   value: "status"
+
 - name: APICAST_OPENSSL_VERIFY
   description: "Turn on/off the OpenSSL peer verification when downloading the configuration. Can be set to true/false."
   required: false
@@ -65,6 +67,10 @@ parameters:
 - name: APICAST_CPU_LIMIT
   description: "APICAST CPU LIMIT"
   value: "300m"
+  required: true
+- name: APICAST_CONFIGURATION_CACHE
+  description: "APICAST CONFIGURATION CACHE"
+  value: 300
   required: true
 
 objects:
@@ -136,7 +142,7 @@ objects:
           - name: APICAST_CONFIGURATION_LOADER
             value: "${APICAST_CONFIGURATION_LOADER}"
           - name: APICAST_CONFIGURATION_CACHE
-            value: "300"
+            value: "${APICAST_CONFIGURATION_CACHE}"
           - name: THREESCALE_DEPLOYMENT_ENV
             value: "${THREESCALE_DEPLOYMENT_ENV}"
           - name: APICAST_MANAGEMENT_API
