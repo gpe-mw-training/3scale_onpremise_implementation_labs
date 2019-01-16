@@ -70,7 +70,7 @@ parameters:
   required: true
 - name: APICAST_CONFIGURATION_CACHE
   description: "APICAST CONFIGURATION CACHE"
-  value: 300
+  value: '300'
   required: true
 
 objects:
