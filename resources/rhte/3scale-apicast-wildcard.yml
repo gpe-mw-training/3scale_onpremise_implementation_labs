@@ -31,8 +31,20 @@ metadata:
 #                    "provider": false
 #                }
 #
+#    4) The defaults parameter values of this template make the following assumptions of your GW services:
+#       a)  they are co-located in the same OCP project as this wildcard gateway
+#       b)  their service names are prod-apicast:8080 and stage-apicast:8080
+#
+#       Over-ride the default parameter values at deploy time if need be.
+
+#
 # Example Usage :
-#   oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com --param LOG_LEVEL=debug   
+#   provision:  oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.$OCP_WILDCARD_DOMAIN
+#   delete   :  oc delete all -l app=wc-router
+
+
+
+
 
 parameters:
 
