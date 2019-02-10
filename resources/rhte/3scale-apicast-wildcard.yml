@@ -17,15 +17,15 @@ metadata:
 #           request:  curl -v -k "https://stores-staging.ocp20.apps.6251.openshift.opentlc.com:443/StoresWS?wsdl&user_key=0eb2e01d7e9b8e2bfc377ad4f12b0e08"
 #
 # Example:
-#   oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-router.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com --param LOG_LEVEL=debug   
+#   oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com --param LOG_LEVEL=debug   
 
 parameters:
 
 - name: GW_WILDCARD_DOMAIN
   description: Root domain for the wildcard routes.  wc-router.apis.$OCP_WILDCARD_DOMAIN
   required: true
-- name: API_HOST
-  description: Host url of API Manager
+- name: Master_API_HOST
+  description: Host url (with access token) of system-master route of API Manager 
   required: true
 - name: APICAST_CPU_LIMIT
   description: "APICAST CPU LIMIT"
@@ -96,7 +96,7 @@ objects:
         containers:
         - env:
           - name: API_HOST
-            value: "${API_HOST}"
+            value: "${MASTER_API_HOST}"
           - name: APICAST_PRODUCTION_SERVICE
             value: "${APICAST_PRODUCTION_SERVICE}"
           - name: APICAST_PRODUCTION_PORT
