@@ -51,7 +51,7 @@ parameters:
 - name: GW_WILDCARD_DOMAIN
   description: Root domain for the wildcard routes.  wc-router.apis.$OCP_WILDCARD_DOMAIN
   required: true
-- name: Master_API_HOST
+- name: MASTER_API_HOST
   description: Host url (with access token) of system-master route of API Manager 
   required: true
 - name: APICAST_CPU_LIMIT
