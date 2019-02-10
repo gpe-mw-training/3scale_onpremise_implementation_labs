@@ -1,0 +1,169 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: "3scale-apicast-wildcard-template"
+  annotations:
+
+
+# Purpose
+#   - Eliminate the need to create API gateway routes that correspond to each backend business service
+#
+# NOTES:
+#   1) Given a value of param GW_WILDCARD_DOMAIN=wc-router.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN ,
+#      then value of "Staging Public Base URL" and "Production Public Base URL" (as definined in integration page of each API) must be of convention:   <any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+#
+#   2) Host URL of requests to this wildcard gateway must match that of "Staging Public Base URL" and "Production Public Base URL" as definined in integration page of each service; ie:
+#           config:   Staging Public Base URL = https://stores-staging.ocp20.apps.6251.openshift.opentlc.com:443
+#           request:  curl -v -k "https://stores-staging.ocp20.apps.6251.openshift.opentlc.com:443/StoresWS?wsdl&user_key=0eb2e01d7e9b8e2bfc377ad4f12b0e08"
+#
+# Example:
+#   oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-router.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com --param LOG_LEVEL=debug   
+
+parameters:
+
+- name: GW_WILDCARD_DOMAIN
+  description: Root domain for the wildcard routes.  wc-router.apis.$OCP_WILDCARD_DOMAIN
+  required: true
+- name: API_HOST
+  description: Host url of API Manager
+  required: true
+- name: APICAST_CPU_LIMIT
+  description: "APICAST CPU LIMIT"
+  value: "300m"
+  required: true
+- name: APP_LABEL
+  description: "APP_LABEL"
+  value: wc-apicast
+  required: true
+- name: AMP_ROUTER_IMAGE
+  required: true
+  value: registry.access.redhat.com/3scale-amp22/wildcard-router:1.6
+- name: LOG_LEVEL
+  required: true
+  value: warn
+- name: APICAST_PRODUCTION_SERVICE
+  required: true
+  value: prod-apicast
+- name: APICAST_PRODUCTION_PORT
+  required: true
+  value: '8080'
+- name: APICAST_STAGING_SERVICE
+  required: true
+  value: stage-apicast
+- name: APICAST_STAGING_PORT
+  required: true
+  value: '8080'
+
+objects:
+
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      3scale.component: apicast
+      3scale.component-element: wildcard-router
+      app: ${APP_LABEL}
+    name: ${APP_LABEL}
+  spec:
+    paused: true
+    replicas: 1
+    strategy:
+      resources:
+        # JA Bride:  Dropping for non-production deployment
+        limits:
+          cpu: ${APICAST_CPU_LIMIT}
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 32Mi
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 1800
+        updatePeriodSeconds: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          3scale.component: apicast
+          3scale.component-element: wildcard-router
+          app: ${APP_LABEL}
+          deploymentConfig: ${APP_LABEL}
+      spec:
+        containers:
+        - env:
+          - name: API_HOST
+            value: "${API_HOST}"
+          - name: APICAST_PRODUCTION_SERVICE
+            value: "${APICAST_PRODUCTION_SERVICE}"
+          - name: APICAST_PRODUCTION_PORT
+            value: "${APICAST_PRODUCTION_PORT}"
+          - name: APICAST_STAGING_SERVICE
+            value: "${APICAST_STAGING_SERVICE}"
+          - name: APICAST_STAGING_PORT
+            value: "${APICAST_STAGING_PORT}"
+          - name: APICAST_LOG_LEVEL
+            value: ${LOG_LEVEL}
+
+          image: ${AMP_ROUTER_IMAGE}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            tcpSocket:
+              port: http
+          name: ${APP_LABEL}
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 64Mi
+            requests:
+              cpu: 120m
+              memory: 32Mi
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      3scale.component: apicast
+      3scale.component-element: wildcard-router
+      app: ${APP_LABEL}
+    name: ${APP_LABEL} 
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+    selector:
+      app: ${APP_LABEL}
+  status:
+    loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      3scale.component: apicast
+      3scale.component-element: wildcard-router
+      app: ${APP_LABEL}
+    name: ${APP_LABEL}
+  spec:
+    host: ${GW_WILDCARD_DOMAIN}
+    port:
+      targetPort: http
+    tls:
+      insecureEdgeTerminationPolicy: Allow
+      termination: edge
+    to:
+      kind: Service
+      name: ${APP_LABEL}
+      weight: null
+    wildcardPolicy: Subdomain
