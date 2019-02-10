@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: "3scale-apicast-wildcard-template"
+  name: "wc-router-template"
   annotations:
 
 
@@ -39,7 +39,7 @@ metadata:
 
 #
 # Example Usage :
-#   provision:  oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.$OCP_WILDCARD_DOMAIN
+#   provision:  oc new-app -f 3scale-wc-router.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.$OCP_WILDCARD_DOMAIN
 #   delete   :  oc delete all -l app=wc-router
 
 
@@ -60,7 +60,7 @@ parameters:
   required: true
 - name: APP_LABEL
   description: "APP_LABEL"
-  value: wc-apicast
+  value: wc-router
   required: true
 - name: AMP_ROUTER_IMAGE
   required: true
@@ -88,7 +88,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      3scale.component: apicast
       3scale.component-element: wildcard-router
       app: ${APP_LABEL}
     name: ${APP_LABEL}
@@ -159,7 +158,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      3scale.component: apicast
       3scale.component-element: wildcard-router
       app: ${APP_LABEL}
     name: ${APP_LABEL} 
@@ -178,7 +176,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      3scale.component: apicast
       3scale.component-element: wildcard-router
       app: ${APP_LABEL}
     name: ${APP_LABEL}
