@@ -16,7 +16,22 @@ metadata:
 #           config:   Staging Public Base URL = https://stores-staging.ocp20.apps.6251.openshift.opentlc.com:443
 #           request:  curl -v -k "https://stores-staging.ocp20.apps.6251.openshift.opentlc.com:443/StoresWS?wsdl&user_key=0eb2e01d7e9b8e2bfc377ad4f12b0e08"
 #
-# Example:
+#   3) This wildcard gateway fetches domain information from master API using host URL of request:
+#        - https://github.com/3scale/wildcard-router-service/blob/master/src/wildcard-service/init.lua#L7
+#        - manual smoke test :
+#            curl -v https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com/master/api/domain/stores-staging.ocp20.apps.6251.openshift.opentlc.com | python -m json.tool
+#                {
+#                    "apicast": {
+#                        "production": false,
+#                        "staging": true
+#                    },
+#                    "developer": false,
+#                    "domain": "stores-staging.ocp20.apps.6251.openshift.opentlc.com",
+#                    "master": false,
+#                    "provider": false
+#                }
+#
+# Example Usage :
 #   oc new-app -f 3scale-apicast-wildcard.yml --param GW_WILDCARD_DOMAIN=wc-apicast.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN --param MASTER_API_HOST=https://1a669cc125854c6d4b98a3ec58d828b3@3scale-mt-api2-master.apps.6251.openshift.opentlc.com --param LOG_LEVEL=debug   
 
 parameters:
