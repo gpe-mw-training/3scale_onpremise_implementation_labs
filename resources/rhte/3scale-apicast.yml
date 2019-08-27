@@ -11,7 +11,7 @@ parameters:
 - name: APICAST_IMAGE_URL
   description: "URL of APIcast image"
   required: true
-  value: "redhat.registry.io/3scale-amp26/apicast-gateway:1.15"
+  value: "registry.redhat.io/3scale-amp26/apicast-gateway:1.15"
   
 
 # examples:
