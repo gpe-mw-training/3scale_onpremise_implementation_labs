@@ -105,6 +105,13 @@ objects:
       termination: edge
       insecureEdgeTerminationPolicy: Allow
 
+- apiVersion: v1
+  imagePullSecrets:
+  - name: threescale-registry-auth
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    name: gw-sa
 
 - apiVersion: extensions/v1beta1 
   kind: Deployment
@@ -128,6 +135,10 @@ objects:
         labels:
           app: ${APP_NAME}
       spec:
+
+        # As of 3scale 2.6, now needed to pull from registry.redhat.io
+        serviceAccountName: gw-sa
+
         containers:
         - env:
   
